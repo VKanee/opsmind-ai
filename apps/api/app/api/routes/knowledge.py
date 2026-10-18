@@ -12,7 +12,7 @@ from app.schemas import (
 from app.services.audit import record_audit
 from app.services.retrieval import index_document, search_knowledge
 
-router = APIRouter(prefix="/knowledge", tags=["knowledge"])
+router = APIRouter(prefix="/knowledge", tags=["知识库"])
 
 
 @router.get("/documents", response_model=list[KnowledgeDocumentResponse])
@@ -82,7 +82,7 @@ def get_document(
         )
     )
     if document is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="知识文档不存在")
     return KnowledgeDocumentResponse.model_validate(document)
 
 

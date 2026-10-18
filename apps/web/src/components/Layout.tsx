@@ -17,19 +17,19 @@ import { useAuth } from "@/context/AuthContext";
 import { titleCase } from "@/lib/format";
 
 const navigation = [
-  { to: "/", label: "Overview", icon: LayoutDashboard, end: true },
-  { to: "/incidents", label: "Incidents", icon: RadioTower },
-  { to: "/knowledge", label: "Knowledge", icon: BookOpenText },
-  { to: "/approvals", label: "Approvals", icon: ClipboardCheck },
-  { to: "/audit", label: "Audit trail", icon: ScrollText },
+  { to: "/", label: "运营总览", icon: LayoutDashboard, end: true },
+  { to: "/incidents", label: "事故中心", icon: RadioTower },
+  { to: "/knowledge", label: "知识库", icon: BookOpenText },
+  { to: "/approvals", label: "审批中心", icon: ClipboardCheck },
+  { to: "/audit", label: "审计日志", icon: ScrollText },
 ];
 
 const pageTitles: Record<string, string> = {
-  "/": "Operations overview",
-  "/incidents": "Incident queue",
-  "/knowledge": "Knowledge base",
-  "/approvals": "Approval queue",
-  "/audit": "Audit trail",
+  "/": "运营总览",
+  "/incidents": "事故队列",
+  "/knowledge": "知识库",
+  "/approvals": "审批队列",
+  "/audit": "审计日志",
 };
 
 export function Layout() {
@@ -38,7 +38,7 @@ export function Layout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const detailPath = location.pathname.startsWith("/incidents/");
   const pageTitle = detailPath
-    ? "Incident workspace"
+    ? "事故处置工作台"
     : pageTitles[location.pathname] ?? "OpsMind AI";
 
   const sidebar = (
@@ -49,14 +49,14 @@ export function Layout() {
         </div>
         <div>
           <strong>OpsMind</strong>
-          <span>AI OPERATIONS</span>
+          <span>AI 运维平台</span>
         </div>
         <button
           className="icon-button sidebar-close"
           type="button"
           onClick={() => setMobileOpen(false)}
-          aria-label="Close navigation"
-          title="Close navigation"
+          aria-label="关闭导航"
+          title="关闭导航"
         >
           <X size={18} />
         </button>
@@ -65,14 +65,14 @@ export function Layout() {
       <div className="workspace-chip">
         <span className="workspace-avatar">AC</span>
         <div>
-          <strong>Acme Cloud</strong>
-          <span>Production</span>
+          <strong>云启科技</strong>
+          <span>生产环境</span>
         </div>
-        <span className="live-indicator" title="Workspace online" />
+        <span className="live-indicator" title="工作区在线" />
       </div>
 
-      <nav className="primary-nav" aria-label="Primary navigation">
-        <div className="nav-label">Workspace</div>
+      <nav className="primary-nav" aria-label="主导航">
+        <div className="nav-label">工作区</div>
         {navigation.map(({ to, label, icon: Icon, end }) => (
           <NavLink
             key={to}
@@ -90,8 +90,8 @@ export function Layout() {
       <div className="sidebar-security">
         <ShieldCheck size={18} />
         <div>
-          <strong>Governed workspace</strong>
-          <span>Approval gates enabled</span>
+          <strong>受治理工作区</strong>
+          <span>生产变更需人工审批</span>
         </div>
       </div>
 
@@ -111,8 +111,8 @@ export function Layout() {
           className="icon-button icon-button-dark"
           type="button"
           onClick={logout}
-          aria-label="Sign out"
-          title="Sign out"
+          aria-label="退出登录"
+          title="退出登录"
         >
           <LogOut size={16} />
         </button>
@@ -127,7 +127,7 @@ export function Layout() {
         <button
           className="mobile-scrim"
           type="button"
-          aria-label="Close navigation"
+          aria-label="关闭导航"
           onClick={() => setMobileOpen(false)}
         />
       ) : null}
@@ -139,19 +139,19 @@ export function Layout() {
               className="icon-button mobile-menu"
               type="button"
               onClick={() => setMobileOpen(true)}
-              aria-label="Open navigation"
-              title="Open navigation"
+              aria-label="打开导航"
+              title="打开导航"
             >
               <Menu size={19} />
             </button>
             <div>
-              <span className="topbar-context">Acme Cloud / Production</span>
+              <span className="topbar-context">云启科技 / 生产环境</span>
               <strong>{pageTitle}</strong>
             </div>
           </div>
           <div className="system-status">
             <span className="status-pulse" />
-            <span>Systems nominal</span>
+            <span>系统运行正常</span>
             <span className="topbar-divider" />
             <span className="topbar-role">{user ? titleCase(user.role) : ""}</span>
           </div>

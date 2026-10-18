@@ -1,64 +1,64 @@
 [
   {
     "id": "checkout-release-regression",
-    "title": "Checkout latency after canary release",
-    "description": "Checkout latency rose after a canary release. Database pool wait time is elevated and carts are being abandoned.",
+    "title": "灰度发布后结算延迟上升",
+    "description": "checkout-api 灰度发布后延迟明显升高，数据库连接池等待时间增加，购物车结算失败量上升。",
     "service": "checkout-api",
     "severity": "sev1",
     "signals": [
-      { "name": "p95 latency", "value": "3.6", "unit": "s", "status": "critical" },
-      { "name": "database pool wait", "value": "520", "unit": "ms", "status": "critical" }
+      { "name": "p95 延迟", "value": "3.6", "unit": "秒", "status": "critical" },
+      { "name": "数据库连接池等待", "value": "520", "unit": "毫秒", "status": "critical" }
     ],
-    "expected_document": "Checkout latency runbook",
-    "expected_keyword": "deployment"
+    "expected_document": "结算服务高延迟处置手册",
+    "expected_keyword": "发布"
   },
   {
     "id": "payment-provider-timeout",
-    "title": "Payment provider timeout cascade",
-    "description": "The upstream payment dependency is timing out and checkout retries are saturating worker capacity.",
+    "title": "支付渠道超时引发级联故障",
+    "description": "上游支付渠道持续超时，结算重试流量正在占满工作线程，错误率快速上升。",
     "service": "payment-gateway",
     "severity": "sev2",
     "signals": [
-      { "name": "provider p99", "value": "4.2", "unit": "s", "status": "critical" },
-      { "name": "retry rate", "value": "38", "unit": "%", "status": "warning" }
+      { "name": "渠道 p99", "value": "4.2", "unit": "秒", "status": "critical" },
+      { "name": "重试比例", "value": "38", "unit": "%", "status": "warning" }
     ],
-    "expected_document": "Payment gateway timeout postmortem",
-    "expected_keyword": "dependency"
+    "expected_document": "支付网关超时复盘报告",
+    "expected_keyword": "依赖"
   },
   {
     "id": "search-replication-lag",
-    "title": "Search replication lag",
-    "description": "Search index replication lag increased and query freshness is outside the service objective.",
+    "title": "搜索索引复制延迟",
+    "description": "搜索索引复制延迟持续升高，查询数据新鲜度已经超出服务目标。",
     "service": "search-index",
     "severity": "sev3",
     "signals": [
-      { "name": "replication lag", "value": "88", "unit": "s", "status": "warning" }
+      { "name": "复制延迟", "value": "88", "unit": "秒", "status": "warning" }
     ],
-    "expected_document": "Search replication recovery guide",
-    "expected_keyword": "telemetry"
+    "expected_document": "搜索索引复制恢复指南",
+    "expected_keyword": "复制"
   },
   {
     "id": "checkout-pool-pressure",
-    "title": "Checkout database pool exhaustion",
-    "description": "Checkout requests are blocking on database connections and latency is increasing across all pods.",
+    "title": "结算数据库连接池耗尽",
+    "description": "结算请求阻塞在数据库连接获取阶段，所有实例的请求延迟都在上升。",
     "service": "checkout-api",
     "severity": "sev2",
     "signals": [
-      { "name": "connection utilization", "value": "98", "unit": "%", "status": "critical" }
+      { "name": "连接使用率", "value": "98", "unit": "%", "status": "critical" }
     ],
-    "expected_document": "Checkout latency runbook",
-    "expected_keyword": "database"
+    "expected_document": "结算服务高延迟处置手册",
+    "expected_keyword": "数据库"
   },
   {
     "id": "rollback-governance",
-    "title": "Release rollback governance check",
-    "description": "A release regression is suspected and the team is evaluating rollback against production policy.",
+    "title": "发布回滚治理检查",
+    "description": "团队怀疑最新版本存在回归，正在评估是否按照生产制度执行回滚。",
     "service": "checkout-api",
     "severity": "sev2",
     "signals": [
-      { "name": "error rate", "value": "6.1", "unit": "%", "status": "warning" }
+      { "name": "错误率", "value": "6.1", "unit": "%", "status": "warning" }
     ],
-    "expected_document": "Production change and rollback policy",
-    "expected_keyword": "deployment"
+    "expected_document": "生产变更与回滚管理制度",
+    "expected_keyword": "发布"
   }
 ]

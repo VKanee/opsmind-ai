@@ -80,7 +80,7 @@ export function IncidentDetailPage() {
       setInvestigation(investigationData[0] ?? null);
       setApprovals(approvalData);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Unable to load incident");
+      setError(cause instanceof Error ? cause.message : "无法加载事故详情");
     } finally {
       setLoading(false);
     }
@@ -100,7 +100,7 @@ export function IncidentDetailPage() {
       setIncident(await getIncident(incident.id));
       setApprovals(await listApprovals());
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Investigation failed");
+      setError(cause instanceof Error ? cause.message : "AI 调查失败");
     } finally {
       setRunning(false);
     }
@@ -113,13 +113,13 @@ export function IncidentDetailPage() {
       const updated = await updateIncidentStatus(incident.id, nextStatus);
       setIncident(updated);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Unable to update status");
+      setError(cause instanceof Error ? cause.message : "无法更新事故状态");
     } finally {
       setUpdatingStatus(false);
     }
   }
 
-  if (loading && !incident) return <Spinner label="Opening incident workspace" />;
+  if (loading && !incident) return <Spinner label="正在打开事故处置工作台" />;
   if (error && !incident) return <ErrorPanel message={error} onRetry={load} />;
   if (!incident) return null;
 
@@ -131,7 +131,7 @@ export function IncidentDetailPage() {
     <div className="page-stack">
       <Link className="back-link" to="/incidents">
         <ArrowLeft size={15} />
-        Incident queue
+        返回事故队列
       </Link>
 
       <section className="incident-command-header">
@@ -154,7 +154,7 @@ export function IncidentDetailPage() {
                       onClick={() => void changeStatus("mitigated")}
                     >
                       <CheckCircle2 size={15} />
-                      Mitigate
+                      标记已缓解
                     </button>
                   ) : null}
                   {incident.status !== "resolved" ? (
@@ -163,7 +163,7 @@ export function IncidentDetailPage() {
                       disabled={updatingStatus}
                       onClick={() => void changeStatus("resolved")}
                     >
-                      Resolve
+                      标记已解决
                     </button>
                   ) : null}
                 </div>
@@ -173,37 +173,37 @@ export function IncidentDetailPage() {
         </div>
         <div className="incident-meta-strip">
           <div>
-            <span>Service</span>
+            <span>服务</span>
             <strong>{incident.service}</strong>
           </div>
           <div>
-            <span>Started</span>
+            <span>开始时间</span>
             <strong>{formatDateTime(incident.started_at)}</strong>
           </div>
           <div>
-            <span>Duration</span>
+            <span>持续时间</span>
             <strong>{formatDuration(incident.started_at, incident.resolved_at)}</strong>
           </div>
           <div>
-            <span>Owner</span>
-            <strong>{incident.owner_name ?? "Unassigned"}</strong>
+            <span>负责人</span>
+            <strong>{incident.owner_name ?? "未分配"}</strong>
           </div>
         </div>
       </section>
 
       {error ? <ErrorPanel message={error} onRetry={load} /> : null}
 
-      <section className="signal-strip" aria-label="Incident signals">
+      <section className="signal-strip" aria-label="事故运行信号">
         {incident.signals.map((signal) => (
           <article className={`signal-card signal-${signal.status}`} key={signal.name}>
             <div>
               <span>{signal.name}</span>
               <span className={`signal-status signal-${signal.status}`}>
                 {signal.status === "critical"
-                  ? "Critical"
+                  ? "严重"
                   : signal.status === "warning"
-                    ? "Elevated"
-                    : "Normal"}
+                    ? "偏高"
+                    : "正常"}
               </span>
             </div>
             <strong>
@@ -214,11 +214,11 @@ export function IncidentDetailPage() {
         ))}
         <article className="signal-card signal-neutral">
           <div>
-            <span>Tags</span>
+            <span>标签</span>
             <Tag size={14} />
           </div>
           <strong className="signal-tags">
-            {incident.tags.length ? incident.tags.join(" / ") : "No tags"}
+            {incident.tags.length ? incident.tags.join(" / ") : "无标签"}
           </strong>
         </article>
       </section>
@@ -240,10 +240,10 @@ export function IncidentDetailPage() {
                 <Sparkles size={25} />
               </div>
               <div>
-                <div className="eyebrow">AI INVESTIGATION</div>
-                <h2>Build an evidence-backed response</h2>
+                <div className="eyebrow">AI 事故调查</div>
+                <h2>生成有证据支撑的处置方案</h2>
                 <p>
-                  Correlate incident signals with runbooks, service maps and prior postmortems.
+                  将事故信号与处置手册、服务依赖和历史复盘进行关联分析。
                 </p>
               </div>
               <button
@@ -252,7 +252,7 @@ export function IncidentDetailPage() {
                 onClick={() => void investigate()}
               >
                 {running ? <LoaderCircle className="spin" size={16} /> : <Sparkles size={16} />}
-                {running ? "Investigating" : "Run investigation"}
+                {running ? "正在调查" : "开始 AI 调查"}
               </button>
             </section>
           )}
@@ -262,27 +262,27 @@ export function IncidentDetailPage() {
           <section className="panel rail-panel">
             <div className="panel-heading">
               <div>
-                <div className="eyebrow">INCIDENT POSTURE</div>
-                <h2>Response facts</h2>
+                <div className="eyebrow">事故状态</div>
+                <h2>响应信息</h2>
               </div>
               <RadioTower size={17} />
             </div>
             <dl className="fact-list">
               <div>
-                <dt>Detected</dt>
+                <dt>发现时间</dt>
                 <dd>{formatRelativeTime(incident.detected_at)}</dd>
               </div>
               <div>
-                <dt>Last updated</dt>
+                <dt>最后更新</dt>
                 <dd>{formatRelativeTime(incident.updated_at)}</dd>
               </div>
               <div>
-                <dt>Resolution</dt>
-                <dd>{incident.resolved_at ? formatDateTime(incident.resolved_at) : "Open"}</dd>
+                <dt>解决时间</dt>
+                <dd>{incident.resolved_at ? formatDateTime(incident.resolved_at) : "处理中"}</dd>
               </div>
               <div>
-                <dt>Investigation</dt>
-                <dd>{investigation ? titleCase(investigation.status) : "Not started"}</dd>
+                <dt>AI 调查</dt>
+                <dd>{investigation ? titleCase(investigation.status) : "尚未开始"}</dd>
               </div>
             </dl>
           </section>
@@ -290,8 +290,8 @@ export function IncidentDetailPage() {
             <section className="panel rail-panel">
               <div className="panel-heading">
                 <div>
-                  <div className="eyebrow">AGENT TRACE</div>
-                  <h2>Execution path</h2>
+                  <div className="eyebrow">智能体轨迹</div>
+                  <h2>执行过程</h2>
                 </div>
                 <GitBranch size={17} />
               </div>
@@ -354,8 +354,8 @@ function InvestigationWorkspace({
     <section className="investigation-panel">
       <div className="investigation-header">
         <div>
-          <div className="eyebrow">AI INVESTIGATION</div>
-          <h2>RCA workspace</h2>
+          <div className="eyebrow">AI 事故调查</div>
+          <h2>根因分析工作台</h2>
         </div>
         <div className="investigation-header-meta">
           <span className="model-chip">
@@ -370,7 +370,7 @@ function InvestigationWorkspace({
               disabled={running}
             >
               {running ? <LoaderCircle className="spin" size={14} /> : <Sparkles size={14} />}
-              Re-run
+              重新分析
             </button>
           ) : null}
         </div>
@@ -385,8 +385,8 @@ function InvestigationWorkspace({
 
       <AnalysisSection
         icon={GitBranch}
-        eyebrow="RANKED CAUSES"
-        title="Hypotheses"
+        eyebrow="原因排序"
+        title="故障假设"
         count={investigation.hypotheses.length}
       >
         <div className="hypothesis-list">
@@ -400,7 +400,7 @@ function InvestigationWorkspace({
                 </div>
                 <div className="confidence">
                   <strong>{Math.round(hypothesis.confidence * 100)}%</strong>
-                  <span>confidence</span>
+                  <span>置信度</span>
                 </div>
               </div>
               <div className="confidence-track">
@@ -413,8 +413,8 @@ function InvestigationWorkspace({
 
       <AnalysisSection
         icon={BookOpenText}
-        eyebrow="RETRIEVAL"
-        title="Evidence chain"
+        eyebrow="证据检索"
+        title="证据链"
         count={investigation.evidence.length}
       >
         <div className="evidence-grid">
@@ -426,8 +426,8 @@ function InvestigationWorkspace({
 
       <AnalysisSection
         icon={ListChecks}
-        eyebrow="CONTROLLED RESPONSE"
-        title="Action plan"
+        eyebrow="受控处置"
+        title="处置计划"
         count={investigation.actions.length}
       >
         <div className="action-list">
@@ -482,13 +482,13 @@ function EvidenceCard({ evidence, index }: { evidence: EvidenceItem; index: numb
       <div className="evidence-head">
         <span className="evidence-index">E{index + 1}</span>
         <SourceBadge source={evidence.source_type} />
-        <span className="match-score">{Math.round(evidence.relevance_score * 100)}% match</span>
+        <span className="match-score">{Math.round(evidence.relevance_score * 100)}% 匹配</span>
       </div>
       <h4>{evidence.document_title}</h4>
       <p>{evidence.snippet}</p>
       <div className="evidence-foot">
         <FileText size={13} />
-        <span>Chunk {evidence.chunk_id.slice(0, 8)}</span>
+        <span>证据片段 {evidence.chunk_id.slice(0, 8)}</span>
       </div>
     </article>
   );
@@ -518,20 +518,20 @@ function ActionRow({
         </div>
         <p>{action.description}</p>
         <span>
-          {action.approval_required ? "Human approval required" : "Read-only diagnostic"} ·{" "}
-          {action.evidence_ids.length} evidence sources
+          {action.approval_required ? "需要人工审批" : "只读诊断"} ·{" "}
+          {action.evidence_ids.length} 条证据
         </span>
       </div>
       {approval?.status === "pending" && canWrite ? (
         <button className="button button-quiet button-small" onClick={() => onDecision(approval)}>
-          Decide
+          审批
           <ChevronRight size={14} />
         </button>
       ) : null}
       {!approval && action.simulation_only ? (
         <span className="simulation-flag">
           <CircleDot size={12} />
-          Dry run
+          模拟执行
         </span>
       ) : null}
     </article>
@@ -558,7 +558,7 @@ function DecisionModal({
       await decideApproval(approval.id, decision, note);
       await onDecided();
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Unable to record decision");
+      setError(cause instanceof Error ? cause.message : "无法记录审批决策");
     } finally {
       setSubmitting(false);
     }
@@ -571,30 +571,30 @@ function DecisionModal({
         style={{ maxWidth: "560px" }}
         role="dialog"
         aria-modal="true"
-        aria-label="Review approval"
+        aria-label="审核审批"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <div className="modal-header">
           <div>
-            <div className="eyebrow">PRODUCTION ACTION</div>
-            <h2>Review recommendation</h2>
+            <div className="eyebrow">生产操作</div>
+            <h2>审核处置建议</h2>
           </div>
-          <button className="icon-button" onClick={onClose} aria-label="Close">
+          <button className="icon-button" onClick={onClose} aria-label="关闭">
             <ArrowLeft size={17} />
           </button>
         </div>
         <div className="decision-summary">
           <RiskBadge risk={approval.risk_level} />
           <h3>{approval.action_title}</h3>
-          <p>This demo records the decision without executing infrastructure commands.</p>
+          <p>当前为演示模式，只记录审批结果，不会执行真实基础设施命令。</p>
         </div>
         <label className="field field-full">
-          <span>Decision note</span>
+          <span>审批说明</span>
           <textarea
             rows={4}
             value={note}
             onChange={(event) => setNote(event.target.value)}
-            placeholder="Record the evidence or operational reason for this decision."
+            placeholder="填写验证依据或本次决策的运维原因。"
           />
         </label>
         {error ? <div className="form-error">{error}</div> : null}
@@ -604,7 +604,7 @@ function DecisionModal({
             disabled={submitting}
             onClick={() => void decide("rejected")}
           >
-            Reject
+            驳回
           </button>
           <button
             className="button button-primary"
@@ -612,7 +612,7 @@ function DecisionModal({
             onClick={() => void decide("approved")}
           >
             <CheckCircle2 size={15} />
-            Approve
+            批准
           </button>
         </div>
       </section>

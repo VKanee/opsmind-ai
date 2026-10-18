@@ -2,7 +2,7 @@ import hashlib
 import math
 import re
 
-TOKEN_PATTERN = re.compile(r"[a-zA-Z0-9][a-zA-Z0-9._/-]*")
+TOKEN_PATTERN = re.compile(r"[a-zA-Z0-9][a-zA-Z0-9._/-]*|[\u4e00-\u9fff]+")
 STOP_WORDS = {
     "a",
     "an",
@@ -28,14 +28,26 @@ STOP_WORDS = {
     "were",
     "with",
 }
+CJK_NOISE_CHARS = set("的了在是和与及着地被把将对从到中")
 
 
 def tokenize(text: str) -> list[str]:
-    return [
-        token.lower()
-        for token in TOKEN_PATTERN.findall(text)
-        if len(token) > 1 and token.lower() not in STOP_WORDS
-    ]
+    tokens: list[str] = []
+    for raw_token in TOKEN_PATTERN.findall(text):
+        token = raw_token.lower()
+        if token.isascii():
+            if len(token) > 1 and token not in STOP_WORDS:
+                tokens.append(token)
+            continue
+
+        # Chinese text has no spaces. Character bigrams provide a portable,
+        # deterministic lexical representation without an external segmenter.
+        cleaned = "".join(char for char in token if char not in CJK_NOISE_CHARS)
+        if len(cleaned) == 1:
+            tokens.append(cleaned)
+        else:
+            tokens.extend(cleaned[index : index + 2] for index in range(len(cleaned) - 1))
+    return tokens
 
 
 def embed_text(text: str, dimensions: int) -> list[float]:

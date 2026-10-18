@@ -8,8 +8,8 @@ const screenshotDir = process.env.E2E_SCREENSHOT_DIR;
 
 async function login(page) {
   await page.goto(webUrl, { waitUntil: "networkidle" });
-  await page.getByRole("button", { name: "Enter workspace" }).click();
-  await page.getByRole("heading", { name: "Operations overview" }).waitFor({
+  await page.getByRole("button", { name: "进入工作区" }).click();
+  await page.getByRole("heading", { name: "运营总览" }).waitFor({
     timeout: 15_000,
   });
 }
@@ -42,37 +42,37 @@ try {
 
   await login(page);
   await screenshot(page, "e2e-dashboard");
-  await page.getByRole("link", { name: "Open incident queue" }).click();
+  await page.getByRole("link", { name: "打开事故队列" }).click();
   await page
     .locator("a.incident-row")
-    .filter({ hasText: "Checkout API latency spike after release" })
+    .filter({ hasText: "checkout-api 发布后出现延迟突增" })
     .click();
-  await page.getByText("RCA workspace").waitFor({ timeout: 15_000 });
-  assert.match(await page.locator("body").innerText(), /Evidence chain/);
-  assert.match(await page.locator("body").innerText(), /Human approval required/);
+  await page.getByText("根因分析工作台").waitFor({ timeout: 15_000 });
+  assert.match(await page.locator("body").innerText(), /证据链/);
+  assert.match(await page.locator("body").innerText(), /需要人工审批/);
 
   const responsePromise = page.waitForResponse(
     (response) =>
       response.url().includes("/investigations") &&
       response.request().method() === "POST",
   );
-  await page.getByRole("button", { name: /Re-run/ }).click();
+  await page.getByRole("button", { name: /重新分析/ }).click();
   const rerunResponse = await responsePromise;
   assert.equal(rerunResponse.status(), 201);
   await screenshot(page, "e2e-incident");
 
-  await page.getByRole("link", { name: "Approvals" }).click();
-  await page.getByRole("heading", { name: "Approval queue" }).waitFor();
-  assert.match(await page.locator("body").innerText(), /awaiting decision/);
+  await page.getByRole("link", { name: "审批中心" }).click();
+  await page.getByRole("heading", { name: "审批队列" }).waitFor();
+  assert.match(await page.locator("body").innerText(), /等待决策/);
 
-  await page.getByRole("link", { name: "Knowledge" }).click();
-  await page.getByRole("heading", { name: "Knowledge base" }).waitFor();
+  await page.getByRole("link", { name: "知识库" }).click();
+  await page.getByRole("heading", { name: "知识库" }).waitFor();
   await page
-    .getByRole("textbox", { name: "Search knowledge base" })
-    .fill("checkout latency database pool");
-  await page.getByRole("button", { name: "Search", exact: true }).click();
-  await page.getByText(/Top evidence for/).waitFor();
-  assert.match(await page.locator("body").innerText(), /Checkout latency runbook/);
+    .getByRole("textbox", { name: "搜索知识库" })
+    .fill("结算 延迟 数据库 连接池");
+  await page.getByRole("button", { name: "搜索", exact: true }).click();
+  await page.getByText(/的相关证据/).waitFor();
+  assert.match(await page.locator("body").innerText(), /结算服务高延迟处置手册/);
   assert.deepEqual(errors, []);
 
   const mobileContext = await browser.newContext({
@@ -85,9 +85,9 @@ try {
     clientWidth: document.documentElement.clientWidth,
   }));
   assert.equal(overflow.scrollWidth, overflow.clientWidth);
-  await mobilePage.getByRole("button", { name: "Open navigation" }).click();
-  await mobilePage.getByRole("link", { name: "Incidents" }).click();
-  await mobilePage.getByRole("heading", { name: "Incident queue" }).waitFor();
+  await mobilePage.getByRole("button", { name: "打开导航" }).click();
+  await mobilePage.getByRole("link", { name: "事故中心" }).click();
+  await mobilePage.getByRole("heading", { name: "事故队列" }).waitFor();
   await mobilePage.waitForTimeout(300);
   const mobileOverflow = await mobilePage.evaluate(() => ({
     scrollWidth: document.documentElement.scrollWidth,
@@ -101,13 +101,13 @@ try {
   });
   const viewerPage = await viewerContext.newPage();
   await viewerPage.goto(webUrl, { waitUntil: "networkidle" });
-  await viewerPage.getByRole("button", { name: "Viewer" }).click();
-  await viewerPage.getByRole("button", { name: "Enter workspace" }).click();
-  await viewerPage.getByRole("heading", { name: "Operations overview" }).waitFor();
-  await viewerPage.getByRole("link", { name: "Incidents", exact: true }).click();
-  await viewerPage.getByRole("heading", { name: "Incident queue" }).waitFor();
+  await viewerPage.getByRole("button", { name: "只读用户" }).click();
+  await viewerPage.getByRole("button", { name: "进入工作区" }).click();
+  await viewerPage.getByRole("heading", { name: "运营总览" }).waitFor();
+  await viewerPage.getByRole("link", { name: "事故中心", exact: true }).click();
+  await viewerPage.getByRole("heading", { name: "事故队列" }).waitFor();
   assert.equal(
-    await viewerPage.getByRole("button", { name: "New incident" }).count(),
+    await viewerPage.getByRole("button", { name: "新建事故" }).count(),
     0,
   );
 

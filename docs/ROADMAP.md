@@ -1,38 +1,39 @@
-# Roadmap
+# 项目路线图
 
-## Phase 1: Reference Product
+## 第一阶段：可运行参考产品
 
-- [x] incident lifecycle and operational dashboard
-- [x] evidence-backed investigation
-- [x] approval queue and audit trail
-- [x] organization-scoped RBAC
-- [x] deterministic evaluation suite
-- [x] Docker, CI, and architecture documentation
+- [x] 事故生命周期和运营总览
+- [x] 带证据引用的 AI 调查
+- [x] 审批队列和审计日志
+- [x] 组织级 RBAC
+- [x] 中文检索和中文演示数据
+- [x] 固定评测集
+- [x] Docker、CI 和架构文档
 
-## Phase 2: Production Integrations
+## 第二阶段：企业集成
 
-- [ ] OIDC / SAML authentication and enterprise group mapping
-- [ ] PostgreSQL + pgvector retrieval adapter
-- [ ] ingestion connectors for runbooks and postmortems
-- [ ] Slack and Microsoft Teams incident notifications
-- [ ] PagerDuty, Grafana, Datadog, and OpenTelemetry signal ingestion
-- [ ] durable investigation jobs with progress events
-- [ ] OpenTelemetry traces and cost dashboards
+- [ ] OIDC / SAML 登录和企业用户组映射
+- [ ] PostgreSQL + pgvector 检索适配器
+- [ ] 企业文档和工单系统接入
+- [ ] Slack、Microsoft Teams、企业微信、钉钉通知
+- [ ] PagerDuty、Grafana、Datadog 和 OpenTelemetry 信号接入
+- [ ] 后台任务队列和调查进度事件
+- [ ] OpenTelemetry 链路和成本看板
 
-## Phase 3: Controlled Automation
+## 第三阶段：受控自动化
 
-- [ ] allowlisted execution adapters for Kubernetes and cloud APIs
-- [ ] two-person approval for critical actions
-- [ ] idempotency keys and action expiration
-- [ ] dry-run diff and blast-radius estimate
-- [ ] automatic rollback verification
-- [ ] signed action receipts
+- [ ] Kubernetes 和云平台白名单执行器
+- [ ] 双人审批
+- [ ] 幂等键和操作过期时间
+- [ ] 变更差异和影响范围预估
+- [ ] 回滚自动验证
+- [ ] 签名后的执行回执
 
-## Phase 4: Advanced Intelligence
+## 第四阶段：高级智能
 
-- [ ] incident similarity search across teams
-- [ ] topology-aware evidence graph
-- [ ] change and deployment correlation
-- [ ] postmortem drafting with human review
-- [ ] prompt and model A/B evaluation
-- [ ] responder feedback loop and hypothesis calibration
+- [ ] 跨团队历史事故相似检索
+- [ ] 拓扑感知的证据图谱
+- [ ] 发布变更与监控指标自动关联
+- [ ] AI 生成复盘草稿并人工审核
+- [ ] 模型和提示词 A/B 评测
+- [ ] 值班人员反馈和假设置信度校准

@@ -7,7 +7,7 @@ from app.schemas import LoginRequest, TokenResponse, UserResponse
 from app.security import create_access_token, verify_password
 from app.services.audit import record_audit
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(prefix="/auth", tags=["登录认证"])
 
 
 @router.post("/login", response_model=TokenResponse)
@@ -16,7 +16,7 @@ def login(payload: LoginRequest, request: Request, db: DbSession) -> TokenRespon
         select(Organization).where(Organization.slug == payload.organization_slug)
     )
     if organization is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="账号或密码错误")
 
     user = db.scalar(
         select(User).where(
@@ -26,7 +26,7 @@ def login(payload: LoginRequest, request: Request, db: DbSession) -> TokenRespon
         )
     )
     if user is None or not verify_password(payload.password, user.password_hash):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="账号或密码错误")
 
     token, expires_in = create_access_token(user, request.app.state.settings)
     record_audit(

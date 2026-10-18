@@ -1,65 +1,62 @@
-# Threat Model
+# 威胁模型
 
-## Assets
+## 需要保护的资产
 
-- incident descriptions and operational telemetry;
-- runbooks, postmortems, and service documentation;
-- model prompts and retrieved evidence;
-- user identities, roles, and tenant membership;
-- approval decisions and audit history;
-- future infrastructure execution credentials.
+- 事故描述、日志和运行指标。
+- 处置手册、复盘报告和服务文档。
+- 模型提示词和检索证据。
+- 用户身份、角色和组织成员关系。
+- 审批记录和审计历史。
+- 将来接入云平台后的执行凭据。
 
-## Trust Boundaries
+## 信任边界
 
 ```mermaid
 flowchart LR
-    User[Authenticated user] --> Browser[Browser]
-    Browser --> API[Control plane]
-    API --> DB[(Tenant data)]
-    API --> Model[External model]
-    Docs[Untrusted document content] --> Retrieval
+    User[已登录用户] --> Browser[浏览器]
+    Browser --> API[控制面]
+    API --> DB[(组织数据)]
+    API --> Model[外部模型]
+    Docs[不可信文档内容] --> Retrieval
     Retrieval --> Model
-    Model --> Policy[Deterministic policy]
-    Policy --> Human[Human approval]
+    Model --> Policy[确定性策略]
+    Policy --> Human[人工审批]
 ```
 
-The model is untrusted. It can propose actions and explanations, but it cannot
-change roles, select another tenant, write audit events, or bypass approval.
+模型被视为不可信组件。模型可以提出建议，但不能修改角色、访问其他租户、写审计日志
+或绕过审批。
 
-## Threats and Controls
+## 主要威胁与控制
 
-| Threat | Current control | Production hardening |
+| 威胁 | 当前控制 | 生产增强 |
 | --- | --- | --- |
-| Cross-tenant data access | Every application query is scoped by JWT organization ID | PostgreSQL row-level security and automated isolation tests |
-| Privilege escalation | Server-side role dependency on every write route | OIDC groups, short-lived tokens, step-up authentication |
-| Prompt injection in runbooks | Structured output validation; policy checks outside the model | Content provenance, instruction-stripping, adversarial evaluation |
-| Hallucinated diagnosis | Evidence IDs must reference retrieved chunks; UI shows citations | Claim-level entailment and model calibration |
-| Unsafe remediation | Medium/high risk actions require human approval | Signed execution adapters, allowlists, idempotency, blast-radius limits |
-| Model provider outage | Deterministic fallback analysis | Provider failover and circuit breakers |
-| Token theft | Short configurable JWT lifetime and 401 invalidation | OIDC, secure cookies, rotation, device binding |
-| Audit tampering | Append-only API design and restricted route surface | Hash chain, WORM storage, SIEM export |
-| Sensitive data sent to model | Explicit provider boundary and local demo mode | DLP redaction, regional provider routing, field-level allowlists |
-| Stolen API key | Key read from environment | Secret manager, per-environment keys, rotation, egress policy |
-| Replay of approval | Approval state transition rejects repeated decisions | Nonce, expiration, strong re-authentication |
+| 跨租户访问 | 所有查询按 JWT 中的组织 ID 过滤 | PostgreSQL 行级安全策略、隔离测试 |
+| 越权操作 | 每个写接口执行服务端角色校验 | OIDC 用户组、短时令牌、强认证 |
+| 文档提示词注入 | 结构化输出校验、模型外审批策略 | 内容来源标记、恶意指令检测 |
+| 模型编造证据 | 过滤未检索到的证据 ID | 声明级溯源和可信度校准 |
+| 高风险处置 | 中高风险操作强制人工审批 | 白名单执行器、双人审批、影响范围限制 |
+| 模型服务中断 | 自动回退到演示分析器 | 多模型路由和熔断器 |
+| 令牌泄露 | 可配置过期时间，401 后自动清理会话 | OIDC、安全 Cookie、令牌轮换 |
+| 审计篡改 | 应用层只追加 | 哈希链、WORM 存储、SIEM 同步 |
+| 敏感数据进入模型 | 明确外部模型边界和本地演示模式 | DLP 脱敏、区域路由、字段白名单 |
+| 审批重放 | 已完成审批不能重复决策 | 随机数、过期时间、再次认证 |
 
-## Security Invariants
+## 必须保持的安全约束
 
-1. A user only receives resources from their organization.
-2. Viewers cannot mutate incidents, investigations, knowledge, or approvals.
-3. Only admins can ingest knowledge sources in the current build.
-4. Medium- and high-risk model recommendations require human approval.
-5. An approval can transition once from pending to approved or rejected.
-6. Every investigation and approval decision creates an audit event.
-7. Model output cannot directly execute production commands.
+1. 用户只能访问自己组织的数据。
+2. 只读用户不能修改事故、知识、调查或审批。
+3. 当前版本只有管理员可以新增知识文档。
+4. 中高风险模型建议必须经过人工审批。
+5. 审批只能从待审批状态转换一次。
+6. AI 调查和审批决策必须产生审计事件。
+7. 模型输出不能直接执行生产命令。
 
-## Current Limitations
+## 当前限制
 
-- Demo JWTs are stored in browser `localStorage`.
-- Demo account passwords are shared for local evaluation.
-- Audit events are not cryptographically chained.
-- Rate limiting and account lockout are not implemented.
-- Knowledge ingestion has no malware scan or file parser because source content
-  is submitted as plain text.
+- 演示 JWT 存储在浏览器 `localStorage`。
+- 演示账号共用密码。
+- 审计事件暂未使用哈希链。
+- 尚未实现限流和账号锁定。
+- 知识内容以纯文本提交，没有文件病毒扫描。
 
-These limitations are explicitly outside the current reference implementation
-and must be resolved before exposure to real production data.
+这些限制在接入真实生产数据前必须解决。

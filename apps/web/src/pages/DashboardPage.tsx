@@ -42,7 +42,7 @@ export function DashboardPage() {
       setOverview(overviewData);
       setApprovals(approvalData);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Unable to load overview");
+      setError(cause instanceof Error ? cause.message : "无法加载运营总览");
     } finally {
       setLoading(false);
     }
@@ -52,7 +52,7 @@ export function DashboardPage() {
     void load();
   }, [load]);
 
-  if (loading && !overview) return <Spinner label="Loading operations workspace" />;
+  if (loading && !overview) return <Spinner label="正在加载运营工作区" />;
   if (error && !overview) return <ErrorPanel message={error} onRetry={load} />;
   if (!overview) return null;
 
@@ -69,42 +69,42 @@ export function DashboardPage() {
   return (
     <div className="page-stack">
       <PageHeader
-        eyebrow="ON-CALL COMMAND"
-        title="Operations overview"
-        description="Live posture across active incidents, AI investigations and governed actions."
+        eyebrow="值班指挥中心"
+        title="运营总览"
+        description="实时查看进行中事故、AI 调查和待审批的生产变更。"
         action={
           <Link className="button button-primary" to="/incidents">
-            Open incident queue
+            打开事故队列
             <ArrowRight size={15} />
           </Link>
         }
       />
 
-      <section className="metric-grid" aria-label="Operational metrics">
+      <section className="metric-grid" aria-label="运营指标">
         <Metric
-          label="Active incidents"
+          label="进行中事故"
           value={overview.active_incidents}
-          detail={`${sev1} SEV1 incident${sev1 === 1 ? "" : "s"} in progress`}
+          detail={`其中 ${sev1} 个 SEV1 事故正在处理`}
           icon={RadioTower}
           tone={sev1 > 0 ? "danger" : "default"}
         />
         <Metric
-          label="Pending approvals"
+          label="待审批操作"
           value={overview.open_approvals}
-          detail="Production actions gated"
+          detail="生产变更已被审批门禁拦截"
           icon={ShieldAlert}
           tone={overview.open_approvals > 0 ? "warning" : "success"}
         />
         <Metric
-          label="Knowledge sources"
+          label="知识来源"
           value={overview.knowledge_documents}
-          detail="Verified operational references"
+          detail="已验证的运维参考资料"
           icon={BookOpenText}
         />
         <Metric
-          label="Evidence coverage"
+          label="证据覆盖率"
           value={`${Math.round(overview.evidence_coverage * 100)}%`}
-          detail={`${overview.investigations} investigations recorded`}
+          detail={`已记录 ${overview.investigations} 次 AI 调查`}
           icon={Sparkles}
           tone="success"
         />
@@ -114,20 +114,20 @@ export function DashboardPage() {
         <section className="panel panel-main">
           <div className="panel-heading">
             <div>
-              <div className="eyebrow">ACTIVE WORK</div>
-              <h2>Incident queue</h2>
+              <div className="eyebrow">当前工作</div>
+              <h2>事故队列</h2>
             </div>
             <Link className="text-link" to="/incidents">
-              View all
+              查看全部
               <ArrowRight size={14} />
             </Link>
           </div>
           <div className="incident-table">
             <div className="table-head incident-table-grid">
-              <span>Incident</span>
-              <span>Service</span>
-              <span>Status</span>
-              <span>Age</span>
+              <span>事故</span>
+              <span>服务</span>
+              <span>状态</span>
+              <span>持续时间</span>
             </div>
             {overview.recent_incidents.map((incident) => (
               <Link
@@ -153,17 +153,17 @@ export function DashboardPage() {
         <section className="panel panel-side">
           <div className="panel-heading">
             <div>
-              <div className="eyebrow">RISK DISTRIBUTION</div>
-              <h2>Severity mix</h2>
+              <div className="eyebrow">风险分布</div>
+              <h2>事故等级</h2>
             </div>
-            <span className="panel-total">{totalSeverity} total</span>
+            <span className="panel-total">共 {totalSeverity} 个</span>
           </div>
           <div className="severity-stack">
             {[
-              ["sev1", sev1, "Critical"],
-              ["sev2", sev2, "High"],
-              ["sev3", sev3, "Moderate"],
-              ["sev4", sev4, "Low"],
+              ["sev1", sev1, "致命"],
+              ["sev2", sev2, "严重"],
+              ["sev3", sev3, "一般"],
+              ["sev4", sev4, "轻微"],
             ].map(([severity, count, label]) => (
               <div className="severity-row" key={String(severity)}>
                 <div className="severity-row-label">
@@ -185,8 +185,8 @@ export function DashboardPage() {
           <div className="panel-rule" />
           <div className="panel-heading compact-heading">
             <div>
-              <div className="eyebrow">SERVICE POSTURE</div>
-              <h2>Active services</h2>
+              <div className="eyebrow">服务状态</div>
+              <h2>存在活动事故的服务</h2>
             </div>
           </div>
           <div className="service-list">
@@ -194,7 +194,7 @@ export function DashboardPage() {
               <div className="service-row" key={service.name}>
                 <div>
                   <strong>{service.name}</strong>
-                  <span>{service.active} active</span>
+                  <span>{service.active} 个活动事故</span>
                 </div>
                 <SeverityBadge severity={service.worst_severity} />
               </div>
@@ -205,11 +205,11 @@ export function DashboardPage() {
         <section className="panel panel-main">
           <div className="panel-heading">
             <div>
-              <div className="eyebrow">HUMAN CONTROL</div>
-              <h2>Approval queue</h2>
+              <div className="eyebrow">人工控制</div>
+              <h2>审批队列</h2>
             </div>
             <Link className="text-link" to="/approvals">
-              Review
+              查看审批
               <ArrowRight size={14} />
             </Link>
           </div>
@@ -235,7 +235,7 @@ export function DashboardPage() {
           ) : (
             <div className="inline-empty">
               <CheckCircle2 size={18} />
-              <span>No actions waiting for approval</span>
+              <span>当前没有等待审批的操作</span>
             </div>
           )}
         </section>
@@ -243,8 +243,8 @@ export function DashboardPage() {
         <section className="panel panel-side">
           <div className="panel-heading">
             <div>
-              <div className="eyebrow">GOVERNANCE</div>
-              <h2>Recent activity</h2>
+              <div className="eyebrow">治理记录</div>
+              <h2>最近活动</h2>
             </div>
             <Activity size={17} className="muted-icon" />
           </div>
@@ -253,9 +253,9 @@ export function DashboardPage() {
               <div className="activity-row" key={event.id}>
                 <span className="activity-dot" />
                 <div>
-                  <strong>{titleCase(event.action.replace(".", " "))}</strong>
+                  <strong>{titleCase(event.action)}</strong>
                   <span>
-                    {event.resource_type} · {formatRelativeTime(event.created_at)}
+                    {titleCase(event.resource_type)} · {formatRelativeTime(event.created_at)}
                   </span>
                 </div>
               </div>
@@ -268,24 +268,24 @@ export function DashboardPage() {
         <div className="health-band-lead">
           <DatabaseZap size={18} />
           <div>
-            <strong>Control plane health</strong>
-            <span>All critical platform dependencies responding</span>
+            <strong>控制面健康状态</strong>
+            <span>所有关键平台依赖均正常响应</span>
           </div>
         </div>
         <div className="health-stat">
-          <span>API</span>
-          <strong>Healthy</strong>
+          <span>API 服务</span>
+          <strong>健康</strong>
         </div>
         <div className="health-stat">
-          <span>Retrieval</span>
-          <strong>Online</strong>
+          <span>证据检索</span>
+          <strong>在线</strong>
         </div>
         <div className="health-stat">
-          <span>Evidence index</span>
-          <strong>{overview.knowledge_documents} sources</strong>
+          <span>证据索引</span>
+          <strong>{overview.knowledge_documents} 个来源</strong>
         </div>
         <div className="health-stat">
-          <span>Observability</span>
+          <span>可观测性</span>
           <strong>Prometheus</strong>
         </div>
       </section>

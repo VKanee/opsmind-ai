@@ -38,7 +38,7 @@ export function ApprovalsPage() {
     try {
       setApprovals(await listApprovals(filter === "all" ? undefined : filter));
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Unable to load approvals");
+      setError(cause instanceof Error ? cause.message : "无法加载审批列表");
     } finally {
       setLoading(false);
     }
@@ -54,19 +54,19 @@ export function ApprovalsPage() {
   return (
     <div className="page-stack">
       <PageHeader
-        eyebrow="HUMAN CONTROL"
-        title="Approval queue"
-        description="Review production-changing recommendations before they leave the control plane."
+        eyebrow="人工控制"
+        title="审批队列"
+        description="所有生产变更建议必须在离开控制面之前完成人工审批。"
         action={
           <div className="approval-summary-chip">
             <ShieldAlert size={15} />
-            {pendingCount} awaiting decision
+            {pendingCount} 项等待决策
           </div>
         }
       />
 
       <section className="panel approvals-panel">
-        <div className="tab-bar" role="tablist" aria-label="Approval status filter">
+        <div className="tab-bar" role="tablist" aria-label="审批状态筛选">
           {(["pending", "approved", "rejected", "all"] as FilterValue[]).map((value) => (
             <button
               key={value}
@@ -81,14 +81,14 @@ export function ApprovalsPage() {
         </div>
 
         {error ? <ErrorPanel message={error} onRetry={load} /> : null}
-        {loading ? <Spinner label="Loading approvals" /> : null}
+        {loading ? <Spinner label="正在加载审批队列" /> : null}
         {!loading && !error && approvals.length === 0 ? (
           <EmptyPanel
-            title={filter === "pending" ? "Queue is clear" : "No approvals in this view"}
+            title={filter === "pending" ? "审批队列已清空" : "当前视图没有审批记录"}
             message={
               filter === "pending"
-                ? "Every production action currently has an auditable decision."
-                : "Switch filters to inspect other decisions."
+                ? "所有生产变更当前都有可审计的决策记录。"
+                : "切换筛选条件查看其他审批记录。"
             }
             icon={ClipboardCheck}
           />
@@ -97,10 +97,10 @@ export function ApprovalsPage() {
         {!loading && approvals.length > 0 ? (
           <div className="approval-table">
             <div className="table-head approval-grid">
-              <span>Recommended action</span>
-              <span>Risk</span>
-              <span>State</span>
-              <span>Created</span>
+              <span>处置建议</span>
+              <span>风险</span>
+              <span>状态</span>
+              <span>创建时间</span>
               <span />
             </div>
             {approvals.map((approval) => (
@@ -111,7 +111,7 @@ export function ApprovalsPage() {
                   </span>
                   <div>
                     <strong>{approval.action_title}</strong>
-                    <span>Investigation {approval.investigation_id.slice(0, 8)}</span>
+                    <span>调查 {approval.investigation_id.slice(0, 8)}</span>
                   </div>
                 </div>
                 <RiskBadge risk={approval.risk_level} />
@@ -122,16 +122,16 @@ export function ApprovalsPage() {
                     <>
                       <button
                         className="icon-button approve-icon"
-                        title="Approve"
-                        aria-label="Approve action"
+                        title="批准"
+                        aria-label="批准处置建议"
                         onClick={() => setSelected(approval)}
                       >
                         <Check size={17} />
                       </button>
                       <button
                         className="icon-button reject-icon"
-                        title="Reject"
-                        aria-label="Reject action"
+                        title="驳回"
+                        aria-label="驳回处置建议"
                         onClick={() => setSelected(approval)}
                       >
                         <X size={17} />
@@ -142,7 +142,7 @@ export function ApprovalsPage() {
                       className="button button-quiet button-small"
                       onClick={() => setSelected(approval)}
                     >
-                      Details
+                      详情
                     </button>
                   )}
                 </div>
@@ -189,7 +189,7 @@ function ApprovalModal({
       await decideApproval(approval.id, decision, note);
       await onDecided();
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Unable to record decision");
+      setError(cause instanceof Error ? cause.message : "无法记录审批决策");
     } finally {
       setSubmitting(false);
     }
@@ -202,15 +202,15 @@ function ApprovalModal({
         style={{ maxWidth: "560px" }}
         role="dialog"
         aria-modal="true"
-        aria-label="Approval details"
+        aria-label="审批详情"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <div className="modal-header">
           <div>
-            <div className="eyebrow">GOVERNED ACTION</div>
-            <h2>{approval.status === "pending" ? "Review action" : "Decision record"}</h2>
+            <div className="eyebrow">受控操作</div>
+            <h2>{approval.status === "pending" ? "审核处置建议" : "审批记录"}</h2>
           </div>
-          <button className="icon-button" onClick={onClose} aria-label="Close">
+          <button className="icon-button" onClick={onClose} aria-label="关闭">
             <X size={18} />
           </button>
         </div>
@@ -221,18 +221,18 @@ function ApprovalModal({
           </div>
           <h3>{approval.action_title}</h3>
           <p>
-            Requested {formatRelativeTime(approval.created_at)} by investigation{" "}
-            {approval.investigation_id.slice(0, 8)}.
+            由调查 {approval.investigation_id.slice(0, 8)} 于{" "}
+            {formatRelativeTime(approval.created_at)}发起。
           </p>
         </div>
         <label className="field field-full">
-          <span>Decision note</span>
+          <span>审批说明</span>
           <textarea
             rows={4}
             value={note}
             onChange={(event) => setNote(event.target.value)}
             readOnly={!canDecide || approval.status !== "pending"}
-            placeholder="Record validation evidence or the reason for rejection."
+            placeholder="填写验证依据、批准理由或驳回原因。"
           />
         </label>
         {error ? <div className="form-error">{error}</div> : null}
@@ -244,7 +244,7 @@ function ApprovalModal({
               onClick={() => void decide("rejected")}
             >
               <XCircle size={15} />
-              Reject
+              驳回
             </button>
             <button
               className="button button-primary"
@@ -252,13 +252,13 @@ function ApprovalModal({
               onClick={() => void decide("approved")}
             >
               <CheckCircle2 size={15} />
-              Approve
+              批准
             </button>
           </div>
         ) : (
           <div className="modal-actions">
             <button className="button button-quiet" onClick={onClose}>
-              Close
+              关闭
             </button>
           </div>
         )}

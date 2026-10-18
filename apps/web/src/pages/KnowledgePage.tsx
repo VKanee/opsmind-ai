@@ -56,7 +56,7 @@ export function KnowledgePage() {
       setDocuments(data);
       setSelected((current) => current ?? data[0] ?? null);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Unable to load knowledge");
+      setError(cause instanceof Error ? cause.message : "无法加载知识库");
     } finally {
       setLoading(false);
     }
@@ -77,7 +77,7 @@ export function KnowledgePage() {
     try {
       setResults(await searchKnowledge(query));
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Search failed");
+      setError(cause instanceof Error ? cause.message : "知识检索失败");
     } finally {
       setSearching(false);
     }
@@ -86,14 +86,14 @@ export function KnowledgePage() {
   return (
     <div className="page-stack">
       <PageHeader
-        eyebrow="RETRIEVAL LIBRARY"
-        title="Knowledge base"
-        description="Verified runbooks, service context and incident learning used by investigations."
+        eyebrow="检索知识库"
+        title="知识库"
+        description="集中维护处置手册、服务说明、复盘报告和管理制度，为 AI 调查提供证据。"
         action={
           canManage ? (
             <button className="button button-primary" onClick={() => setModalOpen(true)}>
               <Plus size={16} />
-              Add source
+              新增知识
             </button>
           ) : undefined
         }
@@ -105,21 +105,21 @@ export function KnowledgePage() {
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search runbooks, policies and incident history"
-            aria-label="Search knowledge base"
+            placeholder="搜索处置手册、制度规范和历史事故"
+            aria-label="搜索知识库"
           />
           <button className="button button-primary" disabled={searching}>
-            {searching ? "Searching" : "Search"}
+            {searching ? "检索中" : "搜索"}
           </button>
         </form>
         <div className="knowledge-stats">
           <span>
             <ShieldCheck size={14} />
-            {documents.filter((document) => document.trust_level === "verified").length} verified
+            {documents.filter((document) => document.trust_level === "verified").length} 条已验证
           </span>
           <span>
             <FileText size={14} />
-            {documents.length} sources
+            共 {documents.length} 个来源
           </span>
         </div>
       </section>
@@ -129,11 +129,11 @@ export function KnowledgePage() {
         <section className="panel search-results-panel">
           <div className="panel-heading">
             <div>
-              <div className="eyebrow">RETRIEVAL RESULTS</div>
-              <h2>Top evidence for “{query}”</h2>
+              <div className="eyebrow">检索结果</div>
+              <h2>“{query}” 的相关证据</h2>
             </div>
             <button className="button button-quiet button-small" onClick={() => setResults([])}>
-              Clear
+              清空
             </button>
           </div>
           <div className="search-result-list">
@@ -156,16 +156,16 @@ export function KnowledgePage() {
         </section>
       ) : null}
 
-      {loading && !documents.length ? <Spinner label="Loading knowledge sources" /> : null}
+      {loading && !documents.length ? <Spinner label="正在加载知识来源" /> : null}
       {!loading && !documents.length ? (
         <EmptyPanel
-          title="No knowledge sources"
-          message="Add a runbook or incident postmortem to make it available for retrieval."
+          title="暂无知识来源"
+          message="新增处置手册或事故复盘，AI 调查就可以引用这些资料。"
           icon={BookOpenText}
           action={
             canManage ? (
               <button className="button button-quiet" onClick={() => setModalOpen(true)}>
-                Add source
+                新增知识
               </button>
             ) : undefined
           }
@@ -177,8 +177,8 @@ export function KnowledgePage() {
           <section className="panel knowledge-list-panel">
             <div className="panel-heading">
               <div>
-                <div className="eyebrow">SOURCE CATALOG</div>
-                <h2>Operational references</h2>
+                <div className="eyebrow">来源目录</div>
+                <h2>运维参考资料</h2>
               </div>
               <span className="panel-total">{documents.length}</span>
             </div>
@@ -219,9 +219,9 @@ export function KnowledgePage() {
               <div className="document-meta">
                 <span>
                   <Clock3 size={13} />
-                  Updated {formatRelativeTime(selected.updated_at)}
+                  更新于 {formatRelativeTime(selected.updated_at)}
                 </span>
-                <span>Version {selected.version}</span>
+                <span>版本 {selected.version}</span>
               </div>
               <div className="document-tags">
                 <Tags size={14} />
@@ -282,53 +282,53 @@ function KnowledgeModal({
       });
       onCreated();
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Unable to add source");
+      setError(cause instanceof Error ? cause.message : "无法新增知识来源");
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <Modal title="Add knowledge source" onClose={onClose} width="680px">
+    <Modal title="新增知识来源" onClose={onClose} width="680px">
       <form className="modal-form" onSubmit={submit}>
         <label className="field field-full">
-          <span>Title</span>
+          <span>标题</span>
           <input
             value={title}
             onChange={(event) => setTitle(event.target.value)}
-            placeholder="Service runbook or incident postmortem title"
+            placeholder="例如：支付服务高延迟处置手册"
             required
           />
         </label>
         <div className="form-grid">
           <label className="field">
-            <span>Source type</span>
+            <span>来源类型</span>
             <select
               value={sourceType}
               onChange={(event) => setSourceType(event.target.value as SourceType)}
             >
-              <option value="runbook">Runbook</option>
-              <option value="postmortem">Postmortem</option>
-              <option value="service_doc">Service document</option>
-              <option value="policy">Policy</option>
+              <option value="runbook">处置手册</option>
+              <option value="postmortem">复盘报告</option>
+              <option value="service_doc">服务文档</option>
+              <option value="policy">制度规范</option>
             </select>
           </label>
           <label className="field">
-            <span>Tags</span>
+            <span>标签</span>
             <input
               value={tags}
               onChange={(event) => setTags(event.target.value)}
-              placeholder="checkout, latency, database"
+              placeholder="结算, 延迟, 数据库"
             />
           </label>
         </div>
         <label className="field field-full">
-          <span>Content</span>
+          <span>正文内容</span>
           <textarea
             rows={10}
             value={content}
             onChange={(event) => setContent(event.target.value)}
-            placeholder="Operational guidance, recovery thresholds and escalation policy."
+            placeholder="填写操作步骤、恢复阈值、升级路径和注意事项。"
             minLength={40}
             required
           />
@@ -336,11 +336,11 @@ function KnowledgeModal({
         {error ? <div className="form-error">{error}</div> : null}
         <div className="modal-actions">
           <button type="button" className="button button-quiet" onClick={onClose}>
-            Cancel
+            取消
           </button>
           <button type="submit" className="button button-primary" disabled={submitting}>
             <FilePlus2 size={15} />
-            {submitting ? "Adding source" : "Add source"}
+            {submitting ? "正在新增" : "新增知识"}
           </button>
         </div>
       </form>

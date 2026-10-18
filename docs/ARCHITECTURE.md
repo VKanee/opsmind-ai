@@ -1,24 +1,25 @@
-# Architecture
+# 系统架构
 
-## System Context
+## 系统目标
 
-OpsMind AI supports an on-call engineer from alert intake through a governed
-response recommendation. The system deliberately separates probabilistic model
-output from deterministic control logic.
+OpsMind AI 面向企业事故响应场景，将概率性的模型输出与确定性的安全控制分离。
+模型可以提出故障假设和处置建议，但不能改变权限、切换租户、写审计日志或绕过审批。
+
+## 系统上下文
 
 ```mermaid
 flowchart TB
-    Browser[React workspace]
-    API[FastAPI control plane]
-    Auth[JWT + RBAC]
-    Incident[Incident domain]
-    Investigation[Investigation orchestrator]
-    Retrieval[Retrieval engine]
-    Provider[LLM provider]
-    Approval[Approval policy]
-    Audit[Audit service]
-    DB[(Relational database)]
-    Metrics[Prometheus scrape endpoint]
+    Browser[React 中文工作台]
+    API[FastAPI 控制面]
+    Auth[JWT 与组织权限]
+    Incident[事故领域服务]
+    Investigation[AI 调查编排器]
+    Retrieval[混合知识检索]
+    Provider[大模型接口]
+    Approval[审批策略]
+    Audit[审计服务]
+    DB[(SQLite 或 PostgreSQL)]
+    Metrics[Prometheus 指标]
 
     Browser -->|HTTPS JSON| API
     API --> Auth
@@ -37,107 +38,91 @@ flowchart TB
     Audit --> DB
 ```
 
-## Request Flow
+## AI 调查流程
 
-### Incident investigation
+1. 响应者针对某个事故发起 AI 调查。
+2. API 校验登录状态，并确认事故属于当前组织。
+3. 编排器整理事故标题、描述、服务名称和运行信号。
+4. 中文二元分词、词法匹配和本地向量相似度共同完成知识检索。
+5. 模型生成结构化故障假设和处置建议。
+6. 控制面过滤模型返回的无效证据 ID。
+7. 所有中高风险生产变更强制设置 `approval_required=true`。
+8. 调查记录、审批请求和审计事件在同一事务内写入数据库。
 
-1. The responder requests an investigation for an incident.
-2. The API resolves the authenticated user and enforces organization scope.
-3. The orchestrator normalizes incident text and signals.
-4. Hybrid retrieval ranks verified chunks using:
-   - deterministic local embeddings and cosine similarity;
-   - lexical token overlap;
-   - document-title relevance.
-5. The model adapter returns structured hypotheses and proposed actions.
-6. The control plane verifies that every medium/high-risk action requires
-   approval and that cited evidence belongs to the retrieved set.
-7. Investigation, approval requests, and an audit event are persisted in one
-   transaction.
+## 审批流程
 
-### Approval
+1. 审批记录初始状态为“待审批”。
+2. 响应者或管理员填写审批说明，并批准或驳回。
+3. API 更新对应处置建议状态，同时写入审计日志。
+4. 同一条审批不能重复决策，重复请求返回 `409 Conflict`。
+5. 当前版本只记录审批结果，不执行真实基础设施命令。
 
-1. The approval row starts in `pending`.
-2. A responder or admin records `approved` or `rejected` with a note.
-3. The API updates the matching action state and writes an audit event.
-4. Repeated decisions return `409 Conflict`.
-
-No infrastructure command is executed in this build. The UI and API expose the
-governance boundary that a future execution adapter must sit behind.
-
-## Application Layers
+## 应用分层
 
 ```text
-app/api/                 HTTP contracts and route composition
-app/schemas.py           request/response validation
-app/models.py            relational domain model
-app/dependencies.py      authentication and role enforcement
-app/services/retrieval   document indexing and evidence ranking
-app/services/llm         structured analysis adapter and demo fallback
+app/api/                  HTTP 路由和接口组合
+app/schemas.py            请求和响应校验
+app/models.py             关系型领域模型
+app/dependencies.py       登录校验和角色权限
+app/services/retrieval    文档切分、索引和证据排序
+app/services/llm          模型适配与演示分析器
 app/services/investigations
-                         orchestration and approval policy
-app/services/audit       append-only event creation
-app/evaluation.py        golden regression runner
+                          AI 调查编排与审批策略
+app/services/audit        审计事件写入
+app/evaluation.py         固定评测集执行器
 ```
 
-Business policy lives in services and dependencies, not in React components.
-The browser does not decide whether an actor can mutate an incident or approve
-an action.
+权限判断、审批策略和租户隔离全部位于后端。前端只负责展示和发起请求，不能决定
+用户是否有权修改事故或批准生产操作。
 
-## Data Model
+## 数据模型
 
-Core entities:
+- `Organization`：租户边界。
+- `User`：组织内的用户和角色。
+- `Incident`：事故及生命周期状态。
+- `KnowledgeDocument` / `KnowledgeChunk`：知识文档与检索片段。
+- `Investigation`：AI 调查结果、证据、模型信息和执行轨迹。
+- `Approval`：人工审批记录。
+- `AuditEvent`：只追加的审计事件。
 
-- `Organization`: tenant boundary.
-- `User`: organization-scoped identity and role.
-- `Incident`: operational event and lifecycle state.
-- `KnowledgeDocument` / `KnowledgeChunk`: source material and retrieval units.
-- `Investigation`: immutable analytical output plus model metadata.
-- `Approval`: human decision for a recommended action.
-- `AuditEvent`: append-only action history.
+所有业务查询都会携带 `organization_id`。事故内部主键使用 UUID，对外展示使用独立
+事故编号，避免泄露数据库主键。
 
-All tenant-owned queries include `organization_id`. Public incident IDs and
-internal UUIDs are separate so external references do not expose primary keys.
+## 部署结构
 
-## Deployment Topology
-
-The development profile uses SQLite for one-command startup. Docker Compose uses
-PostgreSQL and runs the same API code with a separate web container.
+开发环境默认使用 SQLite，便于一条命令启动。Docker Compose 使用 PostgreSQL，
+包含 API、Web 和数据库三个容器。
 
 ```mermaid
 flowchart LR
-    Client[Browser] --> Nginx[Web / Nginx]
-    Nginx -->|/api| API[API container]
+    Client[浏览器] --> Nginx[Web 与 Nginx]
+    Nginx -->|/api| API[API 容器]
     API --> PG[(PostgreSQL)]
-    API --> Models[LLM provider]
+    API --> Models[外部模型服务]
 ```
 
-Recommended production topology:
+生产环境建议：
 
-- managed PostgreSQL with encrypted storage and point-in-time recovery;
-- pgvector or an approved vector index per tenant;
-- Redis or a durable broker plus workers for model and ingestion jobs;
-- central secret manager and OIDC identity provider;
-- OpenTelemetry collector, centralized logs, and alerting;
-- egress proxy with allowlisted model endpoints.
+- 托管 PostgreSQL、加密存储和定时备份。
+- 使用 pgvector 或独立向量数据库。
+- 使用 Redis 或消息队列承载长时间调查任务。
+- 使用企业 OIDC 或 SAML 登录。
+- 使用 Secret Manager 管理密钥。
+- 使用 OpenTelemetry 采集指标、日志和链路。
+- 将模型出口限制在允许的域名和区域。
 
-## Reliability
+## 可靠性设计
 
-- `GET /health/live` does not depend on the database.
-- `GET /health/ready` verifies database connectivity.
-- `/metrics` exposes request count and latency histograms.
-- Every HTTP response receives `x-request-id` and `x-process-time`.
-- A malformed or unavailable external model falls back to deterministic
-  analysis rather than blocking incident response.
-- Database writes for an investigation, approvals, and audit event share a
-  transaction.
+- `/health/live` 不依赖数据库，用于存活检查。
+- `/health/ready` 验证数据库连接，用于就绪检查。
+- `/metrics` 提供请求数量和延迟直方图。
+- 每个响应包含 `x-request-id` 和 `x-process-time`。
+- 外部模型异常时回退到确定性分析器，不阻塞事故响应。
+- 调查、审批和审计写入共享数据库事务。
 
-## Known Boundaries
+## 当前边界
 
-- Retrieval currently scans tenant chunks in application memory for portability.
-  Production scale requires an indexed vector store or pgvector query adapter.
-- Investigations run synchronously. Large evidence sets need a queue and
-  progress events.
-- Audit events are append-only by application design; database-level tamper
-  evidence is a production hardening task.
-- The deterministic demo analyzer is a resilience and test mechanism, not a
-  substitute for model evaluation in production.
+- 知识检索仍在应用层扫描当前组织的片段。大规模数据应使用 pgvector。
+- 调查请求同步执行。接入大模型后应改为后台任务。
+- 审计日志依靠应用层只追加设计，生产环境应增加哈希链或 WORM 存储。
+- 演示分析器用于本地展示和回归测试，不能替代真实模型评测。

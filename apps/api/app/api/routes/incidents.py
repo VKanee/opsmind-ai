@@ -10,7 +10,7 @@ from app.schemas import IncidentCreate, IncidentResponse, IncidentUpdate, Invest
 from app.services.audit import record_audit
 from app.services.investigations import create_investigation
 
-router = APIRouter(prefix="/incidents", tags=["incidents"])
+router = APIRouter(prefix="/incidents", tags=["事故管理"])
 
 
 def _get_incident(db: DbSession, user: CurrentUser, incident_id: str) -> Incident:
@@ -21,7 +21,7 @@ def _get_incident(db: DbSession, user: CurrentUser, incident_id: str) -> Inciden
         )
     )
     if incident is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Incident not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="事故不存在")
     return incident
 
 
@@ -116,7 +116,7 @@ def update_incident(
         if owner is None:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Owner must be an active user in this organization",
+                detail="负责人必须是当前组织中的有效用户",
             )
     for field, value in changes.items():
         setattr(incident, field, value)

@@ -1,14 +1,26 @@
-# Changelog
+# 更新记录
+
+## 0.2.0 - 2026-10-18
+
+### 新增与变更
+
+- 全站界面中文化。
+- 演示事故、知识库、AI 分析结果和评测样例中文化。
+- 增加中文分词和中文混合检索支持。
+- 增加中文 README、架构、威胁模型、评测、调研和路线图。
+- 增加中文使用与部署指南。
+- 增加 Docker 启动、停止、状态查看脚本。
+- 增加本地源码开发停止脚本。
 
 ## 0.1.0 - 2026-10-18
 
-### Added
+### 初始版本
 
-- incident command dashboard and lifecycle
-- evidence-backed AI investigation with citations
-- approval queue and append-only audit trail
-- organization-scoped JWT RBAC
-- deterministic golden evaluation suite
-- React operations workspace with responsive layouts
-- PostgreSQL-ready Docker Compose deployment
-- GitHub Actions quality, browser, and container checks
+- 事故生命周期和运营总览。
+- 带证据引用的 AI 调查。
+- 审批队列和审计日志。
+- 组织级 JWT RBAC。
+- 固定评测集。
+- React 运维工作台。
+- PostgreSQL Docker Compose 部署。
+- GitHub Actions 质量、浏览器和容器检查。

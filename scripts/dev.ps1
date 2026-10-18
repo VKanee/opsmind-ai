@@ -3,6 +3,12 @@ $repoRoot = Resolve-Path "$PSScriptRoot\.."
 $logDirectory = Join-Path $repoRoot ".dev"
 New-Item -ItemType Directory -Force -Path $logDirectory | Out-Null
 
+foreach ($port in @(8000, 5173)) {
+    if (Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue) {
+        throw "端口 $port 已被占用。若 Docker 正在运行，请先执行 .\scripts\stop.ps1。"
+    }
+}
+
 $api = Start-Process `
     -FilePath (Join-Path $repoRoot "apps\api\.venv\Scripts\python.exe") `
     -ArgumentList "-m", "uvicorn", "app.main:app", "--reload", "--port", "8000" `
@@ -21,7 +27,13 @@ $web = Start-Process `
     -RedirectStandardError (Join-Path $logDirectory "web.err.log") `
     -PassThru
 
-Write-Host "API PID: $($api.Id)"
-Write-Host "Web PID: $($web.Id)"
-Write-Host "Workspace: http://localhost:5173"
-Write-Host "API docs:  http://localhost:8000/docs"
+@{
+    api = $api.Id
+    web = $web.Id
+} | ConvertTo-Json | Set-Content -Encoding utf8NoBOM (Join-Path $logDirectory "dev-processes.json")
+
+Write-Host "后端进程 PID：$($api.Id)"
+Write-Host "前端进程 PID：$($web.Id)"
+Write-Host "工作台地址：http://localhost:5173"
+Write-Host "API 文档： http://localhost:8000/docs"
+Write-Host "停止服务请执行：.\scripts\dev-stop.ps1"

@@ -12,9 +12,9 @@ import { useState, type FormEvent } from "react";
 import { useAuth } from "@/context/AuthContext";
 
 const demoAccounts = [
-  { label: "Admin", email: "admin@opsmind.local" },
-  { label: "Responder", email: "responder@opsmind.local" },
-  { label: "Viewer", email: "viewer@opsmind.local" },
+  { label: "管理员", email: "admin@opsmind.local" },
+  { label: "响应者", email: "responder@opsmind.local" },
+  { label: "只读用户", email: "viewer@opsmind.local" },
 ];
 
 export function LoginPage() {
@@ -32,7 +32,7 @@ export function LoginPage() {
     try {
       await login(email, password);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Unable to sign in");
+      setError(cause instanceof Error ? cause.message : "登录失败，请稍后重试");
     } finally {
       setSubmitting(false);
     }
@@ -40,36 +40,35 @@ export function LoginPage() {
 
   return (
     <main className="login-page">
-      <section className="login-context" aria-label="Product context">
+      <section className="login-context" aria-label="平台介绍">
         <div className="login-brand">
           <div className="brand-mark brand-mark-large">
             <Activity size={22} strokeWidth={2.4} />
           </div>
           <div>
             <strong>OpsMind</strong>
-            <span>AI OPERATIONS</span>
+            <span>AI 运维平台</span>
           </div>
         </div>
         <div className="login-message">
-          <div className="eyebrow eyebrow-light">INCIDENT INTELLIGENCE</div>
-          <h1>Turn operational evidence into a clear next action.</h1>
+          <div className="eyebrow eyebrow-light">企业事故智能分析</div>
+          <h1>把复杂运维证据，转化为清晰的下一步行动。</h1>
           <p>
-            A governed workspace for incident response, retrieval-backed analysis and
-            controlled remediation.
+            面向 SRE 与值班团队的事故处置工作台，统一进行证据检索、故障分析和受控处置。
           </p>
         </div>
         <div className="login-proof">
           <div>
             <Siren size={18} />
-            <span>Incident command</span>
+            <span>事故指挥</span>
           </div>
           <div>
             <ShieldCheck size={18} />
-            <span>Approval controls</span>
+            <span>审批控制</span>
           </div>
           <div>
             <LockKeyhole size={18} />
-            <span>Auditable actions</span>
+            <span>全程审计</span>
           </div>
         </div>
       </section>
@@ -82,11 +81,11 @@ export function LoginPage() {
             </div>
             <strong>OpsMind</strong>
           </div>
-          <div className="eyebrow">ACME CLOUD WORKSPACE</div>
-          <h2>Sign in</h2>
-          <p className="login-subtitle">Use your operations workspace credentials.</p>
+          <div className="eyebrow">云启科技工作区</div>
+          <h2>登录系统</h2>
+          <p className="login-subtitle">使用运维工作区账号进入事故处置平台。</p>
 
-          <div className="demo-roles" aria-label="Demo roles">
+          <div className="demo-roles" aria-label="演示角色">
             {demoAccounts.map((account) => (
               <button
                 key={account.email}
@@ -101,7 +100,7 @@ export function LoginPage() {
 
           <form onSubmit={handleSubmit} className="login-form">
             <label>
-              <span>Email address</span>
+              <span>邮箱地址</span>
               <input
                 type="email"
                 value={email}
@@ -111,7 +110,7 @@ export function LoginPage() {
               />
             </label>
             <label>
-              <span>Password</span>
+              <span>密码</span>
               <div className="password-field">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -124,8 +123,8 @@ export function LoginPage() {
                   type="button"
                   className="icon-button password-toggle"
                   onClick={() => setShowPassword((current) => !current)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                  title={showPassword ? "Hide password" : "Show password"}
+                  aria-label={showPassword ? "隐藏密码" : "显示密码"}
+                  title={showPassword ? "隐藏密码" : "显示密码"}
                 >
                   {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                 </button>
@@ -133,12 +132,12 @@ export function LoginPage() {
             </label>
             {error ? <div className="form-error">{error}</div> : null}
             <button className="button button-primary login-submit" type="submit" disabled={submitting}>
-              {submitting ? "Opening workspace" : "Enter workspace"}
+              {submitting ? "正在进入工作区" : "进入工作区"}
               <ArrowRight size={16} />
             </button>
           </form>
           <p className="login-footnote">
-            Demo accounts share the password <code>OpsMind!2026</code>.
+            演示账号统一密码：<code>OpsMind!2026</code>
           </p>
         </div>
       </section>

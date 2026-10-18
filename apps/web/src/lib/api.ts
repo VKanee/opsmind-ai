@@ -63,7 +63,7 @@ async function request<T>(
     },
   });
   if (!response.ok) {
-    let message = "Request failed";
+    let message = "请求失败";
     try {
       const body = (await response.json()) as { detail?: string };
       message = body.detail ?? message;

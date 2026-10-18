@@ -76,27 +76,27 @@ def create_investigation(
         {
             "step": "normalize_incident",
             "status": "completed",
-            "details": f"Parsed {len(incident.signals)} operational signals.",
+            "details": f"已解析 {len(incident.signals)} 个运行信号。",
         },
         {
             "step": "retrieve_evidence",
             "status": "completed",
-            "details": f"Retrieved {len(evidence)} evidence chunks from verified knowledge.",
+            "details": f"已从已验证知识中检索到 {len(evidence)} 条证据片段。",
         },
         {
             "step": "correlate_history",
             "status": "completed",
-            "details": f"Compared {len(similar)} prior incidents for {incident.service}.",
+            "details": f"已关联 {incident.service} 的 {len(similar)} 条历史事故。",
         },
         {
             "step": "generate_hypotheses",
             "status": "completed",
-            "details": f"Ranked {len(analysis.hypotheses)} hypotheses.",
+            "details": f"已生成并排序 {len(analysis.hypotheses)} 个故障假设。",
         },
         {
             "step": "policy_check",
             "status": "completed",
-            "details": "All production-changing actions were routed to human approval.",
+            "details": "所有中高风险生产变更均已转入人工审批队列。",
         },
     ]
     investigation = Investigation(
@@ -162,12 +162,12 @@ def decide_approval(
     if approval.status != ApprovalStatus.PENDING:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Approval has already been decided",
+            detail="该审批已完成，不能重复决策",
         )
 
     investigation = db.get(Investigation, approval.investigation_id)
     if investigation is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Investigation not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="未找到调查记录")
 
     approval.status = ApprovalStatus(decision.decision)
     approval.decided_by_id = user.id

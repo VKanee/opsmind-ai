@@ -1,18 +1,18 @@
 ---
-name: Bug report
-about: Report a reproducible defect
-title: "[Bug] "
+name: 缺陷报告
+about: 报告可复现的问题
+title: "[缺陷] "
 labels: bug
 ---
 
-## Expected behavior
+## 预期行为
 
-## Actual behavior
+## 实际行为
 
-## Reproduction steps
+## 复现步骤
 
-## Environment
+## 运行环境
 
-## Logs or screenshots
+## 日志或截图
 
-Remove secrets and customer data before posting.
+提交前请删除密钥和客户敏感数据。

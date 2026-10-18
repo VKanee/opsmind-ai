@@ -59,11 +59,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             database.close()
 
     app = FastAPI(
-        title="OpsMind AI API",
+        title="OpsMind AI 企业事故智能平台 API",
         version="0.1.0",
         description=(
-            "Enterprise incident intelligence API with evidence-backed investigations, "
-            "human approval controls, RBAC, and append-only audit events."
+            "企业级事故智能分析接口，提供证据检索、AI 根因分析、人工审批、"
+            "基于角色的访问控制和不可变审计日志。"
         ),
         lifespan=lifespan,
     )
@@ -92,11 +92,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         response.headers["x-process-time"] = f"{duration:.4f}"
         return response
 
-    @app.get("/health/live", tags=["health"])
+    @app.get("/health/live", tags=["健康检查"])
     def health_live() -> dict[str, str]:
         return {"status": "ok"}
 
-    @app.get("/health/ready", tags=["health"])
+    @app.get("/health/ready", tags=["健康检查"])
     def health_ready(request: Request) -> dict[str, str]:
         with request.app.state.db.session_factory() as session:
             session.execute(text("SELECT 1"))

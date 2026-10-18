@@ -2,8 +2,9 @@
   color: #1c2621;
   background: #f2f4f0;
   font-family:
-    "Segoe UI Variable", "Segoe UI", ui-sans-serif, system-ui, -apple-system,
-    BlinkMacSystemFont, sans-serif;
+    "Microsoft YaHei", "PingFang SC", "Noto Sans SC", "Segoe UI Variable",
+    "Segoe UI", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   --canvas: #f2f4f0;
@@ -2883,6 +2884,154 @@ textarea {
   font-size: 8.5px;
 }
 
+/* Chinese glyphs need slightly more size than the compact Latin console scale. */
+.nav-item {
+  font-size: 13.5px;
+}
+
+.workspace-chip strong,
+.user-copy strong,
+.topbar-left strong {
+  font-size: 13px;
+}
+
+.workspace-chip div span,
+.user-copy span,
+.topbar-context,
+.system-status {
+  font-size: 10.5px;
+}
+
+.sidebar-security strong {
+  font-size: 11.5px;
+}
+
+.sidebar-security span,
+.nav-label {
+  font-size: 10.5px;
+}
+
+.page-header h1 {
+  font-size: 30px;
+}
+
+.page-header p {
+  font-size: 13px;
+}
+
+.eyebrow,
+.table-head {
+  font-size: 9.5px;
+}
+
+.button {
+  font-size: 12px;
+}
+
+.text-link,
+.back-link,
+.panel-heading h2 {
+  font-size: 12px;
+}
+
+.panel-heading h2 {
+  font-size: 15px;
+}
+
+.badge {
+  font-size: 9.5px;
+}
+
+.metric-top,
+.metric p,
+.muted-copy,
+.mono-copy {
+  font-size: 10.5px;
+}
+
+.metric > strong {
+  font-size: 30px;
+}
+
+.incident-primary strong,
+.approval-preview-copy strong,
+.approval-action strong,
+.service-row strong {
+  font-size: 11.5px;
+}
+
+.incident-primary div span,
+.approval-preview-copy span,
+.approval-action span:not(.approval-action-icon),
+.service-row span:not(.badge) {
+  font-size: 9.5px;
+}
+
+.activity-row strong,
+.audit-event strong {
+  font-size: 10.5px;
+}
+
+.activity-row span,
+.audit-event div span,
+.audit-resource code,
+.audit-actor {
+  font-size: 9px;
+}
+
+.field > span,
+.login-form label > span {
+  font-size: 10.5px;
+}
+
+.field input,
+.field select,
+.field textarea,
+.login-form input {
+  font-size: 12px;
+}
+
+.document-copy strong,
+.search-result-title strong {
+  font-size: 11px;
+}
+
+.document-copy span,
+.document-meta,
+.document-tags span,
+.search-result p,
+.document-content p {
+  font-size: 10px;
+}
+
+.document-content p {
+  font-size: 12px;
+}
+
+.hypothesis-head strong,
+.action-title-line strong,
+.evidence-card h4 {
+  font-size: 11px;
+}
+
+.hypothesis-head div > span,
+.action-copy p,
+.evidence-card p {
+  font-size: 9.8px;
+}
+
+.trace-row strong,
+.fact-list dt,
+.fact-list dd,
+.signal-card > div {
+  font-size: 9.5px;
+}
+
+.trace-row div span,
+.model-footnote {
+  font-size: 8.8px;
+}
+
 @media (max-width: 1180px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
@@ -3072,7 +3221,7 @@ textarea {
   .incident-table-grid > .muted-copy::before,
   .incident-list-grid > .muted-copy::before {
     color: #8a948e;
-    content: "Opened ";
+    content: "开始于 ";
   }
 
   .incident-list-grid > .muted-copy + .muted-copy {

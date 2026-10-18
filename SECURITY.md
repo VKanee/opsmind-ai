@@ -1,16 +1,14 @@
-# Security Policy
+# 安全政策
 
-Do not report vulnerabilities in public issues.
+请不要在公开 Issue 中报告安全漏洞。
 
-Use GitHub's private vulnerability reporting for this repository. Include:
+请使用 GitHub 的私密漏洞报告功能，并提供：
 
-- affected component and version;
-- reproduction steps;
-- expected impact;
-- whether tenant data, authentication, approval policy, or model boundaries are
-  involved;
-- any suggested mitigation.
+- 受影响组件和版本；
+- 复现步骤；
+- 预期影响；
+- 是否涉及租户数据、登录、审批策略或模型边界；
+- 建议的修复方式。
 
-The current project is a reference implementation. Do not deploy it to
-production until the hardening items in `docs/THREAT_MODEL.md` and the
-production notes in `README.md` are addressed.
+当前项目仍是生产级参考实现。在完成 `docs/THREAT_MODEL.md` 中的加固项和
+`docs/USAGE.zh-CN.md` 中的公网部署要求之前，不要将演示环境直接用于真实生产数据。

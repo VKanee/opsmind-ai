@@ -1,56 +1,55 @@
-# Evaluation
+# AI 效果评测
 
-## Purpose
+## 评测目的
 
-OpsMind AI uses a deterministic golden set to catch regressions in the parts of
-the workflow that must remain stable even when the language model changes:
+OpsMind AI 使用固定 Golden Set 检查最不能退化的能力：
 
-- retrieval reaches the expected operational document;
-- analysis contains the expected causal concept;
-- every hypothesis cites retrieved evidence;
-- medium- and high-risk actions require approval.
+- 能否检索到正确的处置文档。
+- 是否包含预期的故障原因。
+- 每个故障假设是否引用真实检索证据。
+- 中高风险建议是否全部要求人工审批。
 
-## Run
+## 执行方式
 
 ```powershell
 cd apps/api
 .\.venv\Scripts\python.exe -m app.evaluation
 ```
 
-The command exits non-zero when the pass rate is below 80 percent. CI runs the
-same suite through `pytest`.
+当总通过率低于 80% 时，命令会以非零状态退出。CI 会通过 `pytest` 执行同一套评测。
 
-## Dataset
+## 当前评测集
 
-`apps/api/app/eval/golden_cases.json` contains five scenarios covering:
+`apps/api/app/eval/golden_cases.json` 包含 5 个场景：
 
-1. checkout deployment regression;
-2. payment provider timeout;
-3. search replication lag;
-4. checkout database pool pressure;
-5. rollback governance.
+1. 灰度发布后结算延迟。
+2. 支付渠道超时。
+3. 搜索索引复制延迟。
+4. 结算数据库连接池耗尽。
+5. 发布回滚治理。
 
-Each case specifies the expected knowledge document, an expected causal term,
-incident signals, service, and severity.
+## 指标
 
-## Metrics
-
-| Metric | Meaning |
+| 指标 | 含义 |
 | --- | --- |
-| Retrieval hit rate | expected document appears in retrieved evidence |
-| Citation coverage | every hypothesis references known retrieved evidence |
-| Action policy pass rate | no medium/high action bypasses approval |
-| Case pass rate | all checks pass for the scenario |
+| 检索命中率 | 预期文档是否出现在检索结果中 |
+| 关键词命中 | 分析结果是否包含预期故障原因 |
+| 证据覆盖率 | 假设是否都引用真实检索证据 |
+| 审批策略通过率 | 中高风险建议是否全部要求审批 |
+| 场景通过率 | 单个场景是否全部检查通过 |
 
-The deterministic demo analyzer makes the suite reproducible in CI. When an
-OpenAI-compatible provider is configured, a separate online evaluation run
-should record model name, prompt version, latency, cost, and human acceptance.
+当前结果：
 
-## Next Evaluation Layers
+- 总场景数：5。
+- 通过数：5。
+- 证据覆盖率：100%。
+- 审批策略通过率：100%。
 
-- retrieval recall@k and mean reciprocal rank on a larger labeled corpus;
-- claim-level groundedness and citation precision;
-- action-plan safety classification with red-team examples;
-- human responder acceptance and correction rates;
-- p50/p95 latency and token cost by incident size;
-- tenant-isolation and access-control regression tests.
+## 后续评测方向
+
+- 扩大企业知识库并要求 recall@k 和 MRR。
+- 评估引用精确率和声明级事实一致性。
+- 增加提示词注入和高风险处置红队样例。
+- 统计值班人员采纳率和纠正率。
+- 记录模型延迟、Token 成本和缓存收益。
+- 持续执行租户隔离和权限回归测试。

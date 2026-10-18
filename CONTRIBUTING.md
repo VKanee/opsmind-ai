@@ -1,24 +1,25 @@
-# Contributing
+# 参与开发
 
-## Workflow
+## 基本流程
 
-1. Create a branch from `main`.
-2. Keep changes scoped to one behavior.
-3. Add tests for policy, retrieval, access control, or lifecycle changes.
-4. Run the full validation suite.
-5. Open a pull request with validation evidence and risk notes.
+1. 从 `main` 创建功能分支。
+2. 每次修改只处理一个明确行为或问题。
+3. 权限、检索、事故生命周期或审批策略变更必须补充测试。
+4. 提交前运行完整验证。
+5. 创建 Pull Request，说明验证结果和风险。
 
-## Local Validation
+## 本地验证
 
 ```powershell
 .\scripts\test.ps1
 ```
 
-## Engineering Rules
+## 工程规则
 
-- Enforce authorization on the server.
-- Do not let model output bypass deterministic policy.
-- Cite retrieved evidence for AI claims.
-- Keep approval and audit transitions transactional.
-- Treat knowledge documents and model output as untrusted input.
-- Do not commit secrets, customer data, or provider keys.
+- 权限必须在服务端执行。
+- 模型输出不得绕过确定性安全策略。
+- AI 结论必须引用检索证据。
+- 审批和审计状态变更必须保持事务一致性。
+- 知识文档和模型输出都视为不可信输入。
+- 不得提交密钥、客户数据或模型 API Key。
+- 面向用户的新文案默认使用中文。

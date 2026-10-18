@@ -1,14 +1,14 @@
-## Summary
+## 修改说明
 
-Describe the behavior changed and why.
+说明本次修改的行为、原因和影响范围。
 
-## Validation
+## 验证
 
-- [ ] API tests and static checks pass
-- [ ] Web lint, tests, and build pass
-- [ ] Security or policy impact reviewed
-- [ ] Documentation or screenshots updated when needed
+- [ ] API 测试和静态检查通过
+- [ ] 前端 Lint、测试和构建通过
+- [ ] 已评估安全与审批策略影响
+- [ ] 已更新必要的中文文档或截图
 
-## Risk
+## 风险
 
-List deployment, data, model, or rollback considerations.
+说明部署、数据、模型或回滚风险。

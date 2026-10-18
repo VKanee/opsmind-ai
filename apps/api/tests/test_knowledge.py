@@ -8,14 +8,14 @@ def test_hybrid_search_returns_cited_evidence(client: TestClient) -> None:
     response = client.post(
         "/api/v1/knowledge/search",
         headers=headers,
-        json={"query": "checkout latency database connection pool rollback", "limit": 5},
+        json={"query": "结算 延迟 数据库 连接池 回滚", "limit": 5},
     )
     assert response.status_code == 200
     results = response.json()["results"]
     assert results
     assert results[0]["relevance_score"] > 0
     assert results[0]["chunk_id"]
-    assert "checkout" in results[0]["document_title"].lower()
+    assert "结算" in results[0]["document_title"]
 
 
 def test_only_admin_can_ingest_documents(client: TestClient) -> None:

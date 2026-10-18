@@ -1,14 +1,14 @@
 ---
-name: Feature request
-about: Propose a product or engineering improvement
-title: "[Feature] "
+name: 功能建议
+about: 提出产品或工程改进建议
+title: "[建议] "
 labels: enhancement
 ---
 
-## Problem
+## 要解决的问题
 
-## Proposed outcome
+## 期望结果
 
-## Operational or security impact
+## 运维或安全影响
 
-## Alternatives considered
+## 考虑过的其他方案

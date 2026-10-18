@@ -4,7 +4,7 @@ services:
     environment:
       POSTGRES_DB: opsmind
       POSTGRES_USER: opsmind
-      POSTGRES_PASSWORD: opsmind-local-only
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-opsmind-local-only}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -18,11 +18,15 @@ services:
       context: apps/api
     environment:
       OPSMIND_ENVIRONMENT: docker
-      OPSMIND_DATABASE_URL: postgresql+psycopg://opsmind:opsmind-local-only@postgres:5432/opsmind
-      OPSMIND_JWT_SECRET: docker-local-change-before-deployment
-      OPSMIND_SEED_DEMO_DATA: "true"
-      OPSMIND_CORS_ORIGINS: '["http://localhost:8080","http://127.0.0.1:8080"]'
-      OPSMIND_LLM_MODE: demo
+      OPSMIND_DATABASE_URL: postgresql+psycopg://opsmind:${POSTGRES_PASSWORD:-opsmind-local-only}@postgres:5432/opsmind
+      OPSMIND_JWT_SECRET: ${OPSMIND_JWT_SECRET:-docker-local-change-before-deployment}
+      OPSMIND_SEED_DEMO_DATA: ${OPSMIND_SEED_DEMO_DATA:-true}
+      OPSMIND_DEMO_USER_PASSWORD: ${OPSMIND_DEMO_USER_PASSWORD:-OpsMind!2026}
+      OPSMIND_CORS_ORIGINS: ${OPSMIND_CORS_ORIGINS:-["http://localhost:8080","http://127.0.0.1:8080"]}
+      OPSMIND_LLM_MODE: ${OPSMIND_LLM_MODE:-demo}
+      OPSMIND_LLM_BASE_URL: ${OPSMIND_LLM_BASE_URL:-https://api.openai.com/v1}
+      OPSMIND_LLM_API_KEY: ${OPSMIND_LLM_API_KEY:-}
+      OPSMIND_LLM_MODEL: ${OPSMIND_LLM_MODEL:-gpt-4.1-mini}
     depends_on:
       postgres:
         condition: service_healthy

@@ -105,7 +105,7 @@ export function Metric({
   );
 }
 
-export function Spinner({ label = "Loading" }: { label?: string }) {
+export function Spinner({ label = "加载中" }: { label?: string }) {
   return (
     <div className="loading-state" role="status">
       <LoaderCircle className="spin" size={20} />
@@ -125,12 +125,12 @@ export function ErrorPanel({
     <div className="error-panel" role="alert">
       <AlertCircle size={19} />
       <div>
-        <strong>Request unavailable</strong>
+        <strong>请求失败</strong>
         <p>{message}</p>
       </div>
       {onRetry ? (
         <button className="button button-quiet" onClick={onRetry}>
-          Retry
+          重试
           <ArrowRight size={15} />
         </button>
       ) : null}
@@ -188,8 +188,8 @@ export function Modal({
             className="icon-button"
             type="button"
             onClick={onClose}
-            aria-label="Close dialog"
-            title="Close"
+            aria-label="关闭弹窗"
+            title="关闭"
           >
             <X size={18} />
           </button>

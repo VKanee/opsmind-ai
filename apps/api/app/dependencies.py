@@ -28,7 +28,7 @@ def get_current_user(
     if credentials is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authentication required",
+            detail="请先登录",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
@@ -37,7 +37,7 @@ def get_current_user(
     except (jwt.InvalidTokenError, KeyError) as exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired access token",
+            detail="登录凭证无效或已过期",
             headers={"WWW-Authenticate": "Bearer"},
         ) from exc
 
@@ -49,7 +49,7 @@ def get_current_user(
         )
     )
     if user is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User unavailable")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="用户不存在或已停用")
     return user
 
 
@@ -61,7 +61,7 @@ def require_roles(*allowed_roles: Role) -> Callable[[CurrentUser], User]:
         if user.role not in allowed_roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Insufficient permissions for this operation",
+                detail="当前账号没有执行该操作的权限",
             )
         return user
 

@@ -51,7 +51,7 @@ export function IncidentsPage() {
         }),
       );
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Unable to load incidents");
+      setError(cause instanceof Error ? cause.message : "无法加载事故列表");
     } finally {
       setLoading(false);
     }
@@ -75,14 +75,14 @@ export function IncidentsPage() {
   return (
     <div className="page-stack">
       <PageHeader
-        eyebrow="INCIDENT RESPONSE"
-        title="Incident queue"
-        description="Prioritize active events, inspect operational signals and open the command workspace."
+        eyebrow="事故响应"
+        title="事故队列"
+        description="按严重程度处理当前事件，查看运行信号并进入事故处置工作台。"
         action={
           canWrite ? (
             <button className="button button-primary" onClick={() => setModalOpen(true)}>
               <Plus size={16} />
-              New incident
+              新建事故
             </button>
           ) : undefined
         }
@@ -94,10 +94,10 @@ export function IncidentsPage() {
             <Search size={16} />
             <input
               type="search"
-              placeholder="Search incident, ID or service"
+              placeholder="搜索事故名称、编号或服务"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              aria-label="Search incidents"
+              aria-label="搜索事故"
             />
           </div>
           <div className="filter-group">
@@ -105,20 +105,20 @@ export function IncidentsPage() {
             <select
               value={statusFilter}
               onChange={(event) => setStatusFilter(event.target.value)}
-              aria-label="Filter by status"
+              aria-label="按状态筛选"
             >
-              <option value="">All statuses</option>
-              <option value="open">Open</option>
-              <option value="investigating">Investigating</option>
-              <option value="mitigated">Mitigated</option>
-              <option value="resolved">Resolved</option>
+              <option value="">全部状态</option>
+              <option value="open">待处理</option>
+              <option value="investigating">调查中</option>
+              <option value="mitigated">已缓解</option>
+              <option value="resolved">已解决</option>
             </select>
             <select
               value={severityFilter}
               onChange={(event) => setSeverityFilter(event.target.value)}
-              aria-label="Filter by severity"
+              aria-label="按严重程度筛选"
             >
-              <option value="">All severities</option>
+              <option value="">全部等级</option>
               <option value="sev1">SEV1</option>
               <option value="sev2">SEV2</option>
               <option value="sev3">SEV3</option>
@@ -128,16 +128,16 @@ export function IncidentsPage() {
         </div>
 
         {error ? <ErrorPanel message={error} onRetry={load} /> : null}
-        {loading ? <Spinner label="Loading incident queue" /> : null}
+        {loading ? <Spinner label="正在加载事故队列" /> : null}
         {!loading && !error && filtered.length === 0 ? (
           <EmptyPanel
-            title="No matching incidents"
-            message="Adjust the filters or create a new incident to start a response."
+            title="没有匹配的事故"
+            message="调整筛选条件，或新建一个事故开始处置。"
             icon={Filter}
             action={
               canWrite ? (
                 <button className="button button-quiet" onClick={() => setModalOpen(true)}>
-                  Create incident
+                  新建事故
                 </button>
               ) : undefined
             }
@@ -147,11 +147,11 @@ export function IncidentsPage() {
         {!loading && filtered.length > 0 ? (
           <div className="incident-list-table">
             <div className="table-head incident-list-grid">
-              <span>Incident</span>
-              <span>Service</span>
-              <span>State</span>
-              <span>Opened</span>
-              <span>Duration</span>
+              <span>事故</span>
+              <span>服务</span>
+              <span>状态</span>
+              <span>开始时间</span>
+              <span>持续时间</span>
               <span />
             </div>
             {filtered.map((incident) => (
@@ -225,28 +225,28 @@ function NewIncidentModal({
       });
       onCreated();
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Unable to create incident");
+      setError(cause instanceof Error ? cause.message : "无法创建事故");
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <Modal title="New incident" onClose={onClose} width="620px">
+    <Modal title="新建事故" onClose={onClose} width="620px">
       <form className="modal-form" onSubmit={submit}>
         <label className="field field-full">
-          <span>Incident title</span>
+          <span>事故标题</span>
           <input
             value={title}
             onChange={(event) => setTitle(event.target.value)}
-            placeholder="Describe the customer-visible symptom"
+            placeholder="例如：支付接口错误率突然升高"
             minLength={4}
             required
           />
         </label>
         <div className="form-grid">
           <label className="field">
-            <span>Service</span>
+            <span>服务名称</span>
             <input
               value={service}
               onChange={(event) => setService(event.target.value)}
@@ -255,7 +255,7 @@ function NewIncidentModal({
             />
           </label>
           <label className="field">
-            <span>Severity</span>
+            <span>严重程度</span>
             <select
               value={severity}
               onChange={(event) => setSeverity(event.target.value as Severity)}
@@ -268,32 +268,32 @@ function NewIncidentModal({
           </label>
         </div>
         <label className="field field-full">
-          <span>Operational description</span>
+          <span>事故描述</span>
           <textarea
             value={description}
             onChange={(event) => setDescription(event.target.value)}
-            placeholder="Include observed symptoms, timing and recent changes."
+            placeholder="描述现象、影响范围、开始时间以及最近的发布或变更。"
             rows={5}
             minLength={10}
             required
           />
         </label>
         <label className="field field-full">
-          <span>Tags</span>
+          <span>标签</span>
           <input
             value={tags}
             onChange={(event) => setTags(event.target.value)}
-            placeholder="latency, release, customer-impact"
+            placeholder="延迟, 发布, 客户影响"
           />
         </label>
         {error ? <div className="form-error">{error}</div> : null}
         <div className="modal-actions">
           <button type="button" className="button button-quiet" onClick={onClose}>
-            Cancel
+            取消
           </button>
           <button type="submit" className="button button-primary" disabled={submitting}>
             <RadioTower size={15} />
-            {submitting ? "Creating" : "Create incident"}
+            {submitting ? "正在创建" : "创建事故"}
           </button>
         </div>
       </form>

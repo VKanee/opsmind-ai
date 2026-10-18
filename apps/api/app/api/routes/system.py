@@ -20,7 +20,7 @@ from app.schemas import (
     SystemOverview,
 )
 
-router = APIRouter(prefix="/system", tags=["system"])
+router = APIRouter(prefix="/system", tags=["系统信息"])
 
 
 @router.get("/overview", response_model=SystemOverview)

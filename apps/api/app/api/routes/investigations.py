@@ -6,7 +6,7 @@ from app.models import Approval, ApprovalStatus, Investigation, Role
 from app.schemas import ApprovalDecision, ApprovalResponse, InvestigationResponse
 from app.services.investigations import decide_approval
 
-router = APIRouter(tags=["investigations"])
+router = APIRouter(tags=["调查与审批"])
 
 
 @router.get("/investigations/{investigation_id}", response_model=InvestigationResponse)
@@ -22,7 +22,7 @@ def get_investigation(
         )
     )
     if investigation is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Investigation not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="调查记录不存在")
     return InvestigationResponse.model_validate(investigation)
 
 
@@ -55,7 +55,7 @@ def decide(
         )
     )
     if approval is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Approval not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="审批记录不存在")
     updated = decide_approval(
         db,
         approval=approval,

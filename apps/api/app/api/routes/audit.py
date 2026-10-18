@@ -5,7 +5,7 @@ from app.dependencies import CurrentUser, DbSession
 from app.models import AuditEvent
 from app.schemas import AuditEventResponse
 
-router = APIRouter(prefix="/audit", tags=["audit"])
+router = APIRouter(prefix="/audit", tags=["审计日志"])
 
 
 @router.get("/events", response_model=list[AuditEventResponse])
