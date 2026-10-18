@@ -9,7 +9,12 @@ from app.services.investigations import decide_approval
 router = APIRouter(tags=["调查与审批"])
 
 
-@router.get("/investigations/{investigation_id}", response_model=InvestigationResponse)
+@router.get(
+    "/investigations/{investigation_id}",
+    response_model=InvestigationResponse,
+    summary="获取 AI 调查结果",
+    description="返回调查摘要、故障假设、证据、处置建议和执行轨迹。",
+)
 def get_investigation(
     investigation_id: str,
     db: DbSession,
@@ -26,7 +31,12 @@ def get_investigation(
     return InvestigationResponse.model_validate(investigation)
 
 
-@router.get("/approvals", response_model=list[ApprovalResponse])
+@router.get(
+    "/approvals",
+    response_model=list[ApprovalResponse],
+    summary="查询审批队列",
+    description="按审批状态查询生产变更建议。",
+)
 def list_approvals(
     db: DbSession,
     user: CurrentUser,
@@ -39,7 +49,12 @@ def list_approvals(
     return [ApprovalResponse.model_validate(row) for row in rows]
 
 
-@router.post("/approvals/{approval_id}/decision", response_model=ApprovalResponse)
+@router.post(
+    "/approvals/{approval_id}/decision",
+    response_model=ApprovalResponse,
+    summary="提交审批决策",
+    description="批准或驳回处置建议，并记录审批说明和审计事件。",
+)
 def decide(
     approval_id: str,
     payload: ApprovalDecision,

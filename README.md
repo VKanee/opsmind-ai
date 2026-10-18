@@ -12,6 +12,9 @@ AI 根因分析、人工审批、权限隔离、审计日志和效果评测整�
 线上系统发生故障时，值班人员能否快速找到相关手册、关联历史事故、形成可验证的
 故障假设，并在不绕过审批和审计的前提下采取下一步行动。
 
+如果只想先用通俗语言了解项目，请阅读
+[项目说明](docs/PROJECT_OVERVIEW.zh-CN.md)。
+
 ![OpsMind AI 运营总览](docs/screenshots/dashboard-desktop.png)
 
 ## 项目是做什么的
@@ -116,7 +119,7 @@ OpsMind AI 的处理方式是：
 
 ### 方式一：Docker 启动，推荐
 
-前提：已安装并启动 Docker Desktop。
+前提：已安装 Docker Desktop。启动脚本会在 Docker 未运行时自动启动它。
 
 在仓库根目录执行：
 
@@ -136,10 +139,16 @@ docker compose up -d --build
 http://localhost:8080
 ```
 
-API 文档：
+中文 API 使用说明：
 
 ```text
-http://localhost:8000/docs
+http://localhost:8080/docs
+```
+
+开发者交互式 Swagger 调试界面：
+
+```text
+http://localhost:8080/swagger
 ```
 
 查看状态：
@@ -160,6 +169,15 @@ http://localhost:8000/docs
 docker compose start
 ```
 
+如果连 Docker Desktop 也要关闭：
+
+```powershell
+.\scripts\quit-docker.ps1
+```
+
+项目容器停止后，Docker Desktop 不需要继续运行。关闭 Docker Desktop 可以减少内存占用，
+但镜像、构建缓存和数据库数据仍会保存在磁盘中。
+
 完全删除演示数据库并重新初始化：
 
 ```powershell
@@ -169,6 +187,40 @@ docker compose down -v
 
 注意：`docker compose down -v` 会删除 PostgreSQL 数据卷。当前演示数据可以重建，
 但生产环境禁止直接使用这个命令。
+
+### Docker 占用磁盘的说明
+
+Docker Desktop 在 Windows 中通常把镜像、构建缓存和数据库卷保存在 WSL 虚拟磁盘中，
+默认位置类似：
+
+```text
+C:\Users\<用户名>\AppData\Local\Docker\wsl\disk\docker_data.vhdx
+```
+
+当前项目实测占用大致为：
+
+- Docker 镜像：约 809 MB。
+- Docker 构建缓存：约 1.24 GB。
+- PostgreSQL 演示数据卷：约 49 MB。
+- WSL 虚拟磁盘文件已分配空间：约 3.38 GB。
+
+项目源码、Python 虚拟环境和前端依赖位于仓库所在的 E 盘，不在 C 盘。C 盘空间变化还可能
+包括 Windows 更新缓存。
+
+查看 Docker 占用：
+
+```powershell
+docker system df
+```
+
+清理可以安全删除的构建缓存：
+
+```powershell
+.\scripts\clean-build-cache.ps1
+```
+
+清理后 Docker 报告的逻辑占用会下降，但 WSL 虚拟磁盘文件不一定会立即缩小。不要在不了解
+影响时执行 `docker system prune -a --volumes`，它可能删除其他 Docker 项目的镜像或数据。
 
 ### 方式二：本地源码开发
 
@@ -320,7 +372,7 @@ npm run build
 
 当前基线：
 
-- 后端 17 个测试通过。
+- 后端 18 个测试通过。
 - 前端 3 个测试通过。
 - 5 个 Golden Evaluation 场景全部通过。
 - Playwright 浏览器测试通过。

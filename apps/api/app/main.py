@@ -9,6 +9,8 @@ from pathlib import Path
 
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.responses import FileResponse
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 from sqlalchemy import text
 
@@ -66,6 +68,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "基于角色的访问控制和不可变审计日志。"
         ),
         lifespan=lifespan,
+        docs_url=None,
+        redoc_url=None,
     )
     app.add_middleware(
         CORSMiddleware,
@@ -92,11 +96,21 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         response.headers["x-process-time"] = f"{duration:.4f}"
         return response
 
-    @app.get("/health/live", tags=["健康检查"])
+    @app.get(
+        "/health/live",
+        tags=["健康检查"],
+        summary="存活检查",
+        description="确认 API 进程正在运行。",
+    )
     def health_live() -> dict[str, str]:
         return {"status": "ok"}
 
-    @app.get("/health/ready", tags=["健康检查"])
+    @app.get(
+        "/health/ready",
+        tags=["健康检查"],
+        summary="就绪检查",
+        description="确认 API 和数据库连接均已就绪。",
+    )
     def health_ready(request: Request) -> dict[str, str]:
         with request.app.state.db.session_factory() as session:
             session.execute(text("SELECT 1"))
@@ -105,6 +119,20 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.get("/metrics", include_in_schema=False)
     def metrics() -> Response:
         return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
+    @app.get("/docs", include_in_schema=False)
+    def api_guide() -> FileResponse:
+        return FileResponse(
+            Path(__file__).parent / "static" / "api-guide.html",
+            media_type="text/html",
+        )
+
+    @app.get("/swagger", include_in_schema=False)
+    def swagger_docs() -> Response:
+        return get_swagger_ui_html(
+            openapi_url=app.openapi_url or "/openapi.json",
+            title="OpsMind AI 开发者接口调试",
+        )
 
     app.include_router(api_router)
     return app

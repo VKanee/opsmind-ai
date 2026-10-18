@@ -23,7 +23,12 @@ from app.schemas import (
 router = APIRouter(prefix="/system", tags=["系统信息"])
 
 
-@router.get("/overview", response_model=SystemOverview)
+@router.get(
+    "/overview",
+    response_model=SystemOverview,
+    summary="获取运营总览",
+    description="返回事故、审批、知识来源、证据覆盖率和服务状态等汇总指标。",
+)
 def overview(db: DbSession, user: CurrentUser) -> SystemOverview:
     organization = db.get(Organization, user.organization_id)
     active_incidents = db.scalar(

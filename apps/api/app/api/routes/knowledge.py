@@ -15,7 +15,12 @@ from app.services.retrieval import index_document, search_knowledge
 router = APIRouter(prefix="/knowledge", tags=["知识库"])
 
 
-@router.get("/documents", response_model=list[KnowledgeDocumentResponse])
+@router.get(
+    "/documents",
+    response_model=list[KnowledgeDocumentResponse],
+    summary="查询知识文档",
+    description="返回当前组织的处置手册、复盘报告、服务文档和制度规范。",
+)
 def list_documents(
     db: DbSession,
     user: CurrentUser,
@@ -34,6 +39,8 @@ def list_documents(
     "/documents",
     response_model=KnowledgeDocumentResponse,
     status_code=status.HTTP_201_CREATED,
+    summary="新增知识文档",
+    description="仅管理员可以新增知识来源，系统会自动切分并建立检索索引。",
 )
 def create_document(
     payload: KnowledgeDocumentCreate,
@@ -69,7 +76,12 @@ def create_document(
     return KnowledgeDocumentResponse.model_validate(document)
 
 
-@router.get("/documents/{document_id}", response_model=KnowledgeDocumentResponse)
+@router.get(
+    "/documents/{document_id}",
+    response_model=KnowledgeDocumentResponse,
+    summary="获取知识文档",
+    description="查询单个知识文档的完整正文和元数据。",
+)
 def get_document(
     document_id: str,
     db: DbSession,
@@ -86,7 +98,12 @@ def get_document(
     return KnowledgeDocumentResponse.model_validate(document)
 
 
-@router.post("/search", response_model=SearchResponse)
+@router.post(
+    "/search",
+    response_model=SearchResponse,
+    summary="搜索知识证据",
+    description="使用中文分词、词法匹配和向量相似度检索相关证据片段。",
+)
 def search(
     payload: SearchRequest,
     request: Request,

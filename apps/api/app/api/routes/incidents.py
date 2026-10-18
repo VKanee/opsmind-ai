@@ -30,7 +30,12 @@ def _new_public_id() -> str:
     return f"INC-{year}-{token_hex(3).upper()}"
 
 
-@router.get("", response_model=list[IncidentResponse])
+@router.get(
+    "",
+    response_model=list[IncidentResponse],
+    summary="查询事故列表",
+    description="按状态、严重程度查询当前组织的事故。",
+)
 def list_incidents(
     db: DbSession,
     user: CurrentUser,
@@ -47,7 +52,13 @@ def list_incidents(
     return [IncidentResponse.model_validate(row) for row in rows]
 
 
-@router.post("", response_model=IncidentResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "",
+    response_model=IncidentResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="创建事故",
+    description="创建事故并记录服务、等级、描述、标签和运行信号。",
+)
 def create_incident(
     payload: IncidentCreate,
     request: Request,
@@ -87,12 +98,22 @@ def create_incident(
     return IncidentResponse.model_validate(incident)
 
 
-@router.get("/{incident_id}", response_model=IncidentResponse)
+@router.get(
+    "/{incident_id}",
+    response_model=IncidentResponse,
+    summary="获取事故详情",
+    description="查询单个事故的完整信息和当前状态。",
+)
 def get_incident(incident_id: str, db: DbSession, user: CurrentUser) -> IncidentResponse:
     return IncidentResponse.model_validate(_get_incident(db, user, incident_id))
 
 
-@router.patch("/{incident_id}", response_model=IncidentResponse)
+@router.patch(
+    "/{incident_id}",
+    response_model=IncidentResponse,
+    summary="更新事故",
+    description="更新事故标题、状态、负责人、标签或运行信号。",
+)
 def update_incident(
     incident_id: str,
     payload: IncidentUpdate,
@@ -139,7 +160,12 @@ def update_incident(
     return IncidentResponse.model_validate(incident)
 
 
-@router.get("/{incident_id}/investigations", response_model=list[InvestigationResponse])
+@router.get(
+    "/{incident_id}/investigations",
+    response_model=list[InvestigationResponse],
+    summary="查询事故调查记录",
+    description="返回该事故下的 AI 调查历史和证据。",
+)
 def list_investigations(
     incident_id: str,
     db: DbSession,
@@ -161,6 +187,8 @@ def list_investigations(
     "/{incident_id}/investigations",
     response_model=InvestigationResponse,
     status_code=status.HTTP_201_CREATED,
+    summary="发起 AI 事故调查",
+    description="检索知识证据并生成故障假设、处置建议和审批请求。",
 )
 def run_investigation(
     incident_id: str,

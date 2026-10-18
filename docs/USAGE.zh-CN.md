@@ -62,11 +62,20 @@ http://localhost:8080
 .\scripts\stop.ps1
 ```
 
+这一步会停止 Web、API 和 PostgreSQL 容器，但 Docker Desktop 仍然在后台运行。
+Docker Desktop 本身也会占用内存，如果不准备继续使用，可以再关闭它：
+
+```powershell
+.\scripts\quit-docker.ps1
+```
+
 重新启动：
 
 ```powershell
-docker compose start
+.\scripts\start.ps1
 ```
+
+`start.ps1` 会在 Docker Desktop 未运行时自动启动 Docker，然后启动项目容器。
 
 彻底关闭并删除演示数据库：
 
@@ -75,6 +84,47 @@ docker compose down -v
 ```
 
 最后一条命令会删除 PostgreSQL 数据卷，只适用于本地演示环境。
+
+## 3.1 Docker 占用磁盘的原因
+
+Docker Desktop 会把以下内容保存到 Windows 的 WSL 虚拟磁盘：
+
+- Web 和 API 镜像。
+- PostgreSQL 镜像。
+- 构建时产生的临时层和缓存。
+- 项目数据库卷。
+
+默认磁盘文件通常位于：
+
+```text
+C:\Users\<用户名>\AppData\Local\Docker\wsl\disk\docker_data.vhdx
+```
+
+当前实测：
+
+- 镜像约 809 MB。
+- 构建缓存约 1.24 GB。
+- 数据库卷约 49 MB。
+- WSL 虚拟磁盘文件约 3.38 GB。
+
+项目源码、`.venv` 和 `node_modules` 位于 E 盘，不在 C 盘。C 盘占用变化还可能来自
+Windows 更新和 Docker Desktop 自身的程序文件。
+
+查看占用：
+
+```powershell
+docker system df
+```
+
+只清理可安全重建的 Docker 构建缓存：
+
+```powershell
+.\scripts\clean-build-cache.ps1
+```
+
+清理后 WSL 虚拟磁盘文件可能不会马上缩小，但后续构建不会再继续增加这部分缓存。
+不要直接执行 `docker system prune -a --volumes`，除非你确认没有其他 Docker 项目依赖
+这些镜像和数据卷。
 
 ## 4. 同局域网访问
 
@@ -197,6 +247,18 @@ API 地址：
 
 ```text
 http://localhost:8000
+```
+
+中文 API 使用说明：
+
+```text
+http://localhost:8080/docs
+```
+
+开发者交互式 Swagger：
+
+```text
+http://localhost:8080/swagger
 ```
 
 ## 8. 演示账号

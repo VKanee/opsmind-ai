@@ -10,7 +10,12 @@ from app.services.audit import record_audit
 router = APIRouter(prefix="/auth", tags=["登录认证"])
 
 
-@router.post("/login", response_model=TokenResponse)
+@router.post(
+    "/login",
+    response_model=TokenResponse,
+    summary="用户登录",
+    description="使用组织标识、邮箱和密码获取访问令牌。",
+)
 def login(payload: LoginRequest, request: Request, db: DbSession) -> TokenResponse:
     organization = db.scalar(
         select(Organization).where(Organization.slug == payload.organization_slug)
@@ -47,6 +52,11 @@ def login(payload: LoginRequest, request: Request, db: DbSession) -> TokenRespon
     )
 
 
-@router.get("/me", response_model=UserResponse)
+@router.get(
+    "/me",
+    response_model=UserResponse,
+    summary="获取当前用户",
+    description="返回当前访问令牌对应的用户、组织和角色。",
+)
 def me(user: CurrentUser) -> UserResponse:
     return UserResponse.model_validate(user)

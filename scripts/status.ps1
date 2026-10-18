@@ -9,4 +9,5 @@ try {
 
 Write-Host ""
 Write-Host "工作台：http://localhost:8080"
-Write-Host "API 文档：http://localhost:8000/docs"
+Write-Host "中文 API 使用说明：http://localhost:8080/docs"
+Write-Host "开发者 Swagger：  http://localhost:8080/swagger"

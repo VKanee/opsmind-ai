@@ -8,7 +8,12 @@ from app.schemas import AuditEventResponse
 router = APIRouter(prefix="/audit", tags=["审计日志"])
 
 
-@router.get("/events", response_model=list[AuditEventResponse])
+@router.get(
+    "/events",
+    response_model=list[AuditEventResponse],
+    summary="查询审计日志",
+    description="返回当前组织的登录、事故变更、AI 调查和审批记录。",
+)
 def list_audit_events(
     db: DbSession,
     user: CurrentUser,
