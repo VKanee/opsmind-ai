@@ -30,4 +30,5 @@ Thumbs.db
 data/
 logs/
 *.log
-
+.dev/
+docs/screenshots/login-after-submit.png

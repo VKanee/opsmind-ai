@@ -1,0 +1,64 @@
+[
+  {
+    "id": "checkout-release-regression",
+    "title": "Checkout latency after canary release",
+    "description": "Checkout latency rose after a canary release. Database pool wait time is elevated and carts are being abandoned.",
+    "service": "checkout-api",
+    "severity": "sev1",
+    "signals": [
+      { "name": "p95 latency", "value": "3.6", "unit": "s", "status": "critical" },
+      { "name": "database pool wait", "value": "520", "unit": "ms", "status": "critical" }
+    ],
+    "expected_document": "Checkout latency runbook",
+    "expected_keyword": "deployment"
+  },
+  {
+    "id": "payment-provider-timeout",
+    "title": "Payment provider timeout cascade",
+    "description": "The upstream payment dependency is timing out and checkout retries are saturating worker capacity.",
+    "service": "payment-gateway",
+    "severity": "sev2",
+    "signals": [
+      { "name": "provider p99", "value": "4.2", "unit": "s", "status": "critical" },
+      { "name": "retry rate", "value": "38", "unit": "%", "status": "warning" }
+    ],
+    "expected_document": "Payment gateway timeout postmortem",
+    "expected_keyword": "dependency"
+  },
+  {
+    "id": "search-replication-lag",
+    "title": "Search replication lag",
+    "description": "Search index replication lag increased and query freshness is outside the service objective.",
+    "service": "search-index",
+    "severity": "sev3",
+    "signals": [
+      { "name": "replication lag", "value": "88", "unit": "s", "status": "warning" }
+    ],
+    "expected_document": "Search replication recovery guide",
+    "expected_keyword": "telemetry"
+  },
+  {
+    "id": "checkout-pool-pressure",
+    "title": "Checkout database pool exhaustion",
+    "description": "Checkout requests are blocking on database connections and latency is increasing across all pods.",
+    "service": "checkout-api",
+    "severity": "sev2",
+    "signals": [
+      { "name": "connection utilization", "value": "98", "unit": "%", "status": "critical" }
+    ],
+    "expected_document": "Checkout latency runbook",
+    "expected_keyword": "database"
+  },
+  {
+    "id": "rollback-governance",
+    "title": "Release rollback governance check",
+    "description": "A release regression is suspected and the team is evaluating rollback against production policy.",
+    "service": "checkout-api",
+    "severity": "sev2",
+    "signals": [
+      { "name": "error rate", "value": "6.1", "unit": "%", "status": "warning" }
+    ],
+    "expected_document": "Production change and rollback policy",
+    "expected_keyword": "deployment"
+  }
+]
