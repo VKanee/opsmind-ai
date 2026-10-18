@@ -1,4 +1,11 @@
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
+
+docker info 2>$null | Out-Null
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Docker Desktop 当前未运行。"
+    Write-Host "启动项目请双击“启动项目.cmd”，或在终端执行 .\scripts\start.ps1"
+    exit 0
+}
 
 Push-Location "$PSScriptRoot\.."
 try {

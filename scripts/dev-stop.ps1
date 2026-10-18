@@ -1,4 +1,4 @@
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
 $repoRoot = Resolve-Path "$PSScriptRoot\.."
 $pidFile = Join-Path $repoRoot ".dev\dev-processes.json"
 

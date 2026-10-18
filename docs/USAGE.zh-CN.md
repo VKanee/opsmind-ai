@@ -36,6 +36,9 @@ OpsMind AI 主要解决线上事故处理期间的“信息分散”和“决策
 .\scripts\start.ps1
 ```
 
+最方便的方式是直接双击仓库根目录的 `启动项目.cmd`。它会自动启动 Docker Desktop、
+启动项目，并绕过 Windows 对本地 PowerShell 脚本的执行策略限制。
+
 如果脚本无法运行，可以直接执行：
 
 ```powershell
@@ -62,6 +65,8 @@ http://localhost:8080
 .\scripts\stop.ps1
 ```
 
+或者直接双击根目录的 `完全关闭项目.cmd`，同时关闭项目和 Docker Desktop。
+
 这一步会停止 Web、API 和 PostgreSQL 容器，但 Docker Desktop 仍然在后台运行。
 Docker Desktop 本身也会占用内存，如果不准备继续使用，可以再关闭它：
 
@@ -84,6 +89,23 @@ docker compose down -v
 ```
 
 最后一条命令会删除 PostgreSQL 数据卷，只适用于本地演示环境。
+
+### PowerShell 提示“禁止运行脚本”
+
+这说明 Windows 阻止了当前终端直接运行 `.ps1` 文件，不是项目代码错误。优先使用
+`启动项目.cmd`、`查看项目状态.cmd` 和 `完全关闭项目.cmd`。
+
+如果必须使用 PowerShell，可以临时绕过本次执行策略：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\quit-docker.ps1
+```
+
+也可以只对当前用户允许本地脚本：
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```
 
 ## 3.1 Docker 占用磁盘的原因
 

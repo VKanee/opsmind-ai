@@ -1,11 +1,14 @@
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
 $repoRoot = Resolve-Path "$PSScriptRoot\.."
 
-Push-Location $repoRoot
-try {
-    docker compose stop
-} finally {
-    Pop-Location
+docker info 2>$null | Out-Null
+if ($LASTEXITCODE -eq 0) {
+    Push-Location $repoRoot
+    try {
+        docker compose stop
+    } finally {
+        Pop-Location
+    }
 }
 
 $dockerProcesses = @("Docker Desktop", "com.docker.backend", "com.docker.build")

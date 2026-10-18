@@ -1,4 +1,4 @@
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
 
 Write-Host "将删除 Docker 构建缓存，但保留镜像、容器、数据库卷和项目源码。"
 $answer = Read-Host "确认继续吗？输入 y 继续"

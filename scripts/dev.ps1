@@ -1,4 +1,4 @@
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
 $repoRoot = Resolve-Path "$PSScriptRoot\.."
 $logDirectory = Join-Path $repoRoot ".dev"
 New-Item -ItemType Directory -Force -Path $logDirectory | Out-Null

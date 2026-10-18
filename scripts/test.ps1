@@ -1,4 +1,4 @@
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
 
 Write-Host "开始验证后端..."
 Push-Location "$PSScriptRoot\..\apps\api"

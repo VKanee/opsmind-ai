@@ -121,6 +121,26 @@ OpsMind AI 的处理方式是：
 
 前提：已安装 Docker Desktop。启动脚本会在 Docker 未运行时自动启动它。
 
+最简单的使用方式是在资源管理器中双击仓库根目录的：
+
+```text
+启动项目.cmd
+```
+
+完全关闭项目时双击：
+
+```text
+完全关闭项目.cmd
+```
+
+查看状态时双击：
+
+```text
+查看项目状态.cmd
+```
+
+这三个文件会自动绕过 Windows 对本地 `.ps1` 脚本的执行策略限制，不会修改系统设置。
+
 在仓库根目录执行：
 
 ```powershell
@@ -187,6 +207,12 @@ docker compose down -v
 
 注意：`docker compose down -v` 会删除 PostgreSQL 数据卷。当前演示数据可以重建，
 但生产环境禁止直接使用这个命令。
+
+如果终端提示“在此系统上禁止运行脚本”，使用上面的 `.cmd` 启动器，或者执行：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\stop.ps1
+```
 
 ### Docker 占用磁盘的说明
 

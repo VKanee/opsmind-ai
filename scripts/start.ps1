@@ -1,4 +1,4 @@
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
 
 docker info 2>$null | Out-Null
 if ($LASTEXITCODE -ne 0) {

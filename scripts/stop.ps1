@@ -1,4 +1,10 @@
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
+
+docker info 2>$null | Out-Null
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Docker 当前未运行，项目已经处于关闭状态。"
+    exit 0
+}
 
 Push-Location "$PSScriptRoot\.."
 try {
